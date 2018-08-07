@@ -29,17 +29,19 @@ object clients {
       //println(total)
       if (total > 0) {
         logger.info("Existen ficheros de clientes para cargar, procede con la carga")
+        println("Existen ficheros de clientes para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
         val df = sq.read.option("header", "true").option("delimiter", ";").csv(clientsInput).distinct()
         df.printSchema()
         df.show()
-        df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(clientsData)
-        logger.info("Se ha escrito el fichero de clientes en HDFS")
+        //df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(clientsData)
+        //logger.info("Se ha escrito el fichero de clientes en HDFS")
         // Muevo los ficheros a OLD para historificar
-        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.clientsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.clientsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de clientes para cargar")
+        println("No hay ficheros de clientes para cargar")
       }
 
 

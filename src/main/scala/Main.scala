@@ -18,17 +18,18 @@ object Main {
     sc.hadoopConfiguration.setInt( "dfs.blocksize", blockSize )
     sc.hadoopConfiguration.setInt( "parquet.block.size", blockSize )
 
-    //val textFile2 = sc.textFile("hdfs://localhost:9000/input/cities-01_06_2017.csv")
-
-    //textFile2.collect().foreach(println)
+    // Carga y limpieza de ficheros
     logger.info("Comienza carga y limpieza de Ciudades")
-
     cities.load(sc, sq)
-
     logger.info("Termina carga y limpieza de Ciudades")
+
     logger.info("Comienza carga y limpieza de Antenas")
     antennas.load(sc, sq)
     logger.info("Termina carga y limpieza de Antenas")
+
+    logger.info("Comienza carga y limpieza de clientes")
+    clients.load(sc, sq)
+    logger.info("Termina carga y limpieza de clientes")
 
 
   }

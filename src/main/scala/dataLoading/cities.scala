@@ -39,6 +39,7 @@ object cities {
       //println(total)
       if (total > 0) {
         logger.info("Existen ficheros de ciudades para cargar, procede con la carga")
+        println("Existen ficheros de ciudades para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
         val df = sq.read.option("header", "true").option("delimiter", ";").csv(citiesInput).distinct()
         //df.printSchema()
@@ -63,12 +64,13 @@ object cities {
         dfGeo.show()
         dfGeo.coalesce(1).write.mode(SaveMode.Overwrite).parquet(citiesData)
         logger.info("Se ha escrito el fichero de ciudades en HDFS")
-
+        println("Se ha escrito el fichero de ciudades en HDFS")
         // Muevo los ficheros a OLD para historificar
         files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.citiesPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de ciudades para cargar")
+        println("No hay ficheros de ciudades para cargar")
       }
 
 
