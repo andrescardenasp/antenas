@@ -4,7 +4,7 @@
 		module="antenas$sbt_2.12"
 		revision="0.1"
 		status="integration"
-		publication="20180806224124"
+		publication="20180807193714"
 	/>
 	<configurations>
 		<conf name="compile" visibility="public" description=""/>

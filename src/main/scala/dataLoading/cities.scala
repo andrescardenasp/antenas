@@ -21,8 +21,7 @@ import grizzled.slf4j.Logger
 
 
 object cities {
-  //  val ages = Seq(42, 75, 29, 64)
-  //  println(s"The oldest person is ${ages.max}")
+
 
   def load(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
@@ -33,10 +32,8 @@ object cities {
     val hdfs = FileSystem.get(new URI(parameters.getString("hdfs.url")), conf)
     try {
 
-// valido si hay ficheros para procesar
-      val files = hdfs.listStatus(new Path("/input/cities/"))
-      //files.foreach(x=> println(x.getPath))
-
+// Valido si hay ficheros para procesar
+      val files = hdfs.listStatus(new Path(parameters.getString("hdfs.input.citiesPath")))
       var total = 0
       files.foreach(x=> total +=1)
       //println(total)
@@ -62,12 +59,13 @@ object cities {
           .drop("X3")
           .drop("X4")
           .drop("X5")
-        //dfGeo.show()
+        dfGeo.printSchema()
+        dfGeo.show()
         dfGeo.coalesce(1).write.mode(SaveMode.Overwrite).parquet(citiesData)
         logger.info("Se ha escrito el fichero de ciudades en HDFS")
-        // Muevo los ficheros a OLD para historificar
 
-        files.foreach(x=> hdfs.rename(x.getPath, new Path("/input/citiesOld/"+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        // Muevo los ficheros a OLD para historificar
+        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.citiesPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de ciudades para cargar")
