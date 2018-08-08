@@ -6,11 +6,12 @@ import com.typesafe.config.ConfigFactory
 import org.apache.log4j.Logger
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.{Row, SQLContext}
+import org.apache.spark.sql.{Row, SQLContext, SaveMode}
 import org.apache.spark.sql.types.{StructField, StructType, _}
-import org.apache.spark.sql.functions.{col, split, udf, date_format, from_unixtime, unix_timestamp, to_date}
+import org.apache.spark.sql.functions.{col, date_format, from_unixtime, split, to_date, udf, unix_timestamp}
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import org.apache.commons.lang.StringUtils
 
 object events {
 
@@ -49,12 +50,11 @@ object events {
         ))
 
         val df = sq.read.option("header", "true").option("delimiter", ";").schema(customSchema).csv(eventsInput)
-        df.printSchema()
-        df.show()
-        print(df.count())
+        //df.printSchema()
+        //df.show()
+        val totalEvents = df.count()
 
-        //val valid = udf(validateDf(_)) 1668927N
-        //df.withColumn("validDate", valid('Date)).show
+
         val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
         val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
 
@@ -68,18 +68,20 @@ object events {
           .withColumn("Hour", split(col("Time"), ":").getItem(0))
           .withColumn("Minute", split(col("Time"), ":").getItem(1))
           .join(dfAntennas, "AntennaId")
-            .join(dfClients, "ClientId")
+          .join(dfClients, "ClientId")
 
         validDf.printSchema()
         validDf.show()
-        print(validDf.count())
+        val totalEnrichedEvents = validDf.count()
+        val filteredEvents = totalEvents-totalEnrichedEvents
+        logger.info("en total hay: " + totalEvents + "eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
+        println("en total hay: " + totalEvents + "eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
 
 
-
-        //df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(eventsData)
-        //logger.info("Se ha escrito el fichero de eventos en HDFS")
+        validDf.coalesce(1).write.mode(SaveMode.Overwrite).parquet(eventsData)
+        logger.info("Se ha escrito el fichero de eventos en HDFS")
         // Muevo los ficheros a OLD para historificar
-        //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.eventsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.eventsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de eventos para cargar")
