@@ -8,12 +8,12 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Row, SQLContext}
 import org.apache.spark.sql.types.{StructField, StructType, _}
-
-
+import org.apache.spark.sql.functions.udf
 
 object events {
 
   val logger = Logger(this.getClass)
+
   def load(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
 
@@ -32,7 +32,7 @@ object events {
         logger.info("Existen ficheros de eventos para cargar, procede con la carga")
         println("Existen ficheros de eventos para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
-//ClientId;Date;AntennaId
+        //ClientId;Date;AntennaId
         val customSchema = StructType(Array(
 
           StructField("ClientId", StringType, false),
@@ -45,7 +45,11 @@ object events {
         df.printSchema()
         df.show()
 
-        val validDateDf = df.filter(validDateDf(_))
+        //val valid = udf(validateDf(_)) 1668927N
+        //df.withColumn("validDate", valid('Date)).show
+
+        val validDf = df.filter(validateDf(_))
+        validDf.show()
 
         //df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(eventsData)
         //logger.info("Se ha escrito el fichero de eventos en HDFS")
@@ -70,22 +74,24 @@ object events {
   }
 
 
-// 05/06/2017-11:20:05.000
+  // 05/06/2017-11:20:05.000
   val DATE_TIME_FORMAT = "dd/MM/yyyy-HH:mm:ss.SSS"
 
-  def validateDf(row: Row): Unit = try {
+  def validateDf(row: Row): Boolean = {
+
+    try {
     //assume row.getString(1) with give Datetime string
-    java.time.LocalDateTime.parse(row.getString(1), java.time.format.DateTimeFormatter.ofPattern(DATE_TIME_FORMAT))
+    java.time.LocalDateTime.parse (row.getString(1), java.time.format.DateTimeFormatter.ofPattern (DATE_TIME_FORMAT) )
     //logger.info("Fecha validada correctamente" + dateInRow)
     true
   } catch {
     case ex: java.time.format.DateTimeParseException => {
-      // Handle exception if you want
-      //logger.error("Fallo en la validación de fechas" + ex)
-      false
-    }
+    // Handle exception if you want
+    //logger.error("Fallo en la validación de fechas" + ex)
+    false
   }
-
+  }
+  }
 
 
 }
