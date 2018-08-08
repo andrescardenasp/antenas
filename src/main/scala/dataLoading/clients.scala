@@ -7,6 +7,7 @@ import grizzled.slf4j.Logger
 import org.apache.commons.lang.StringUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
+import org.apache.spark.sql.types.{StructField, StructType, _}
 import org.apache.spark.sql.{SQLContext, _}
 
 
@@ -31,7 +32,18 @@ object clients {
         logger.info("Existen ficheros de clientes para cargar, procede con la carga")
         println("Existen ficheros de clientes para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
-        val df = sq.read.option("header", "true").option("delimiter", ";").csv(clientsInput).distinct()
+
+        val customSchema = StructType(Array(
+
+          StructField("ClientId", StringType, false),
+          StructField("Age", IntegerType, true),
+          StructField("Gender", StringType, true),
+          StructField("Nationality", StringType, true),
+            StructField("CivilStatus", StringType, true),
+          StructField("SocioeconomicLevel", StringType, true)
+        ))
+
+        val df = sq.read.option("header", "true").option("delimiter", ";").schema(customSchema).csv(clientsInput).distinct()
         df.printSchema()
         df.show()
         //df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(clientsData)

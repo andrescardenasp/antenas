@@ -31,6 +31,10 @@ object Main {
     clients.load(sc, sq)
     logger.info("Termina carga y limpieza de clientes")
 
+    logger.info("Comienza carga y limpieza de eventos")
+    events.load(sc, sq)
+    logger.info("Termina carga y limpieza de eventos")
+
 
   }
 }

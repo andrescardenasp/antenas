@@ -4,7 +4,7 @@
 		module="antenas-build"
 		revision="0.1.0-SNAPSHOT"
 		status="integration"
-		publication="20180807193626"
+		publication="20180808085413"
 		e:sbtVersion="1.0" e:scalaVersion="2.12"
 	>
 		<description>
