@@ -13,35 +13,32 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.SparkSession
 import java.util.Properties
 import org.apache.commons.lang.StringUtils
-
 import org.apache.spark.mllib
 import com.typesafe.config.{Config, ConfigFactory}
-import grizzled.slf4j.Logger
+import org.apache.log4j.Logger
 
 
 
 object cities {
-  //  val ages = Seq(42, 75, 29, 64)
-  //  println(s"The oldest person is ${ages.max}")
+
 
   def load(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
-    val logger = Logger(this.getClass)
+    val logger = Logger.getLogger(this.getClass.getName)
     val parameters = ConfigFactory.parseResources("properties.conf").resolve()
     val citiesInput = parameters.getString("hdfs.input.cities")
     val citiesData = parameters.getString("hdfs.cleanData.cities")
     val hdfs = FileSystem.get(new URI(parameters.getString("hdfs.url")), conf)
     try {
 
-// valido si hay ficheros para procesar
-      val files = hdfs.listStatus(new Path("/input/cities/"))
-      //files.foreach(x=> println(x.getPath))
-
+// Valido si hay ficheros para procesar
+      val files = hdfs.listStatus(new Path(parameters.getString("hdfs.input.citiesPath")))
       var total = 0
       files.foreach(x=> total +=1)
       //println(total)
       if (total > 0) {
-        logger.info("Existen ficheros de ciudades para cargar, procede con la carga")
+        logger.info("Existen " + total + " ficheros de ciudades para cargar, procede con la carga")
+        println("Existen " + total + " ficheros de ciudades para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
         val df = sq.read.option("header", "true").option("delimiter", ";").csv(citiesInput).distinct()
         //df.printSchema()
@@ -62,15 +59,17 @@ object cities {
           .drop("X3")
           .drop("X4")
           .drop("X5")
-        //dfGeo.show()
+        dfGeo.printSchema()
+        dfGeo.show()
         dfGeo.coalesce(1).write.mode(SaveMode.Overwrite).parquet(citiesData)
         logger.info("Se ha escrito el fichero de ciudades en HDFS")
+        println("Se ha escrito el fichero de ciudades en HDFS")
         // Muevo los ficheros a OLD para historificar
-
-        files.foreach(x=> hdfs.rename(x.getPath, new Path("/input/citiesOld/"+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.citiesPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de ciudades para cargar")
+        println("No hay ficheros de ciudades para cargar")
       }
 
 

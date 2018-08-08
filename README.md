@@ -5,5 +5,3 @@ Repositorio dedicado para el Trabajo  de Fin de Máster
 - Universidad: U-Tad (Centro universitario de tecnología  arte digital)  
 - Título: Monetización del dato  
 - Autor:Andrés Cárdenas Parra
-
-

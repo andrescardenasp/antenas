@@ -7,28 +7,16 @@
 		revision="0.1"
 		conf="test"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, pom, scala-tool"
-		date="20180806224127"/>
+		date="20180808210925"/>
 	<dependencies>
 		<module organisation="com.typesafe" name="config">
-			<revision name="1.3.3" status="release" pubdate="20180221150821" resolver="public" artresolver="public" homepage="https://github.com/lightbend/config" downloaded="true" searched="true" default="false" conf="default, compile, runtime, default(compile), master" position="178">
+			<revision name="1.3.3" status="release" pubdate="20180221150821" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/lightbend/config" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="176">
 				<license name="Apache License, Version 2.0" url="https://www.apache.org/licenses/LICENSE-2.0"/>
-				<metadata-artifact status="successful" details="" size="1859" time="35" location="/home/acp/.ivy2/cache/com.typesafe/config/ivy-1.3.3.xml" searched="true" original-local-location="/home/acp/.ivy2/cache/com.typesafe/config/ivy-1.3.3.xml.original" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/config/1.3.3/config-1.3.3.pom"/>
+				<metadata-artifact status="no" details="" size="2874" time="0" location="/home/acp/.ivy2/cache/com.typesafe/config/ivy-1.3.3.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/com/typesafe/config/1.3.3/config-1.3.3.pom"/>
 				<caller organisation="default" name="antenas_2.11" conf="test, compile, runtime" rev="1.3.3" rev-constraint-default="1.3.3" rev-constraint-dynamic="1.3.3" callerrev="0.1"/>
 				<artifacts>
-					<artifact name="config" type="bundle" ext="jar" status="successful" details="" size="286090" time="443" location="/home/acp/.ivy2/cache/com.typesafe/config/bundles/config-1.3.3.jar">
+					<artifact name="config" type="bundle" ext="jar" status="no" details="" size="286090" time="0" location="/home/acp/.ivy2/cache/com.typesafe/config/bundles/config-1.3.3.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/com/typesafe/config/1.3.3/config-1.3.3.jar"/>
-					</artifact>
-				</artifacts>
-			</revision>
-		</module>
-		<module organisation="org.clapper" name="grizzled-slf4j_2.11">
-			<revision name="1.0.2" status="release" pubdate="20140427162710" resolver="sbt-chain" artresolver="sbt-chain" homepage="https://github.com/bmc/grizzled-slf4j/#readme" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="177">
-				<license name="BSD" url="http://software.clapper.org/grizzled-slf4j/license.html"/>
-				<metadata-artifact status="no" details="" size="2982" time="0" location="/home/acp/.ivy2/cache/org.clapper/grizzled-slf4j_2.11/ivy-1.0.2.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/clapper/grizzled-slf4j_2.11/1.0.2/grizzled-slf4j_2.11-1.0.2.pom"/>
-				<caller organisation="default" name="antenas_2.11" conf="test, compile, runtime" rev="1.0.2" rev-constraint-default="1.0.2" rev-constraint-dynamic="1.0.2" callerrev="0.1"/>
-				<artifacts>
-					<artifact name="grizzled-slf4j_2.11" type="jar" ext="jar" status="no" details="" size="6427" time="0" location="/home/acp/.ivy2/cache/org.clapper/grizzled-slf4j_2.11/jars/grizzled-slf4j_2.11-1.0.2.jar">
-						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/clapper/grizzled-slf4j_2.11/1.0.2/grizzled-slf4j_2.11-1.0.2.jar"/>
 					</artifact>
 				</artifacts>
 			</revision>
@@ -294,7 +282,7 @@
 			</revision>
 		</module>
 		<module organisation="org.slf4j" name="slf4j-api">
-			<revision name="1.7.25" status="release" pubdate="20170316173632" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.slf4j.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master, default(compile), default" position="157">
+			<revision name="1.7.25" status="release" pubdate="20170316173632" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.slf4j.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="157">
 				<license name="MIT License" url="http://www.opensource.org/licenses/mit-license.php"/>
 				<metadata-artifact status="no" details="" size="5377" time="0" location="/home/acp/.ivy2/cache/org.slf4j/slf4j-api/ivy-1.7.25.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.pom"/>
 				<caller organisation="org.slf4j" name="jul-to-slf4j" conf="compile, runtime" rev="1.7.16" rev-constraint-default="1.7.16" rev-constraint-dynamic="1.7.16" callerrev="1.7.16"/>
@@ -302,7 +290,6 @@
 				<caller organisation="org.apache.curator" name="curator-client" conf="compile, runtime" rev="1.7.6" rev-constraint-default="1.7.6" rev-constraint-dynamic="1.7.6" callerrev="2.6.0"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-jvm" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-yarn-server-nodemanager" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
-				<caller organisation="org.clapper" name="grizzled-slf4j_2.11" conf="default, compile, runtime, master" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="1.0.2"/>
 				<caller organisation="org.apache.arrow" name="arrow-memory" conf="compile, runtime" rev="1.7.25" rev-constraint-default="1.7.25" rev-constraint-dynamic="1.7.25" callerrev="0.8.0"/>
 				<caller organisation="org.apache.directory.api" name="api-util" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.0.0-M20"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-mapreduce-client-core" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
@@ -313,7 +300,6 @@
 				<caller organisation="org.slf4j" name="slf4j-log4j12" conf="compile, runtime" rev="1.7.16" rev-constraint-default="1.7.16" rev-constraint-dynamic="1.7.16" callerrev="1.7.16"/>
 				<caller organisation="org.slf4j" name="jcl-over-slf4j" conf="compile, runtime" rev="1.7.16" rev-constraint-default="1.7.16" rev-constraint-dynamic="1.7.16" callerrev="1.7.16"/>
 				<caller organisation="org.apache.arrow" name="arrow-vector" conf="compile, runtime" rev="1.7.25" rev-constraint-default="1.7.25" rev-constraint-dynamic="1.7.25" callerrev="0.8.0"/>
-				<caller organisation="default" name="antenas_2.11" conf="test, compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="0.1"/>
 				<caller organisation="org.apache.directory.api" name="api-asn1-api" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.0.0-M20"/>
 				<caller organisation="org.apache.parquet" name="parquet-common" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.8.3"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-graphite" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
@@ -328,7 +314,6 @@
 				<caller organisation="org.apache.hadoop" name="hadoop-mapreduce-client-jobclient" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-core" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-auth" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
-				<caller organisation="org.slf4j" name="slf4j-simple" conf="default, compile, runtime, master" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.7.5"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-mapreduce-client-common" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
 				<caller organisation="org.apache.orc" name="orc-core" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.4.4"/>
 				<artifacts>
@@ -337,7 +322,7 @@
 					</artifact>
 				</artifacts>
 			</revision>
-			<revision name="1.7.16" status="release" pubdate="20160211212603" resolver="sbt-chain" artresolver="sbt-chain" evicted="latest-revision" evicted-reason="" homepage="http://www.slf4j.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master, default(compile)" position="-1">
+			<revision name="1.7.16" status="release" pubdate="20160211212603" resolver="sbt-chain" artresolver="sbt-chain" evicted="latest-revision" evicted-reason="" homepage="http://www.slf4j.org" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="-1">
 				<license name="MIT License" url="http://www.opensource.org/licenses/mit-license.php"/>
 				<metadata-artifact status="no" details="" size="5199" time="0" location="/home/acp/.ivy2/cache/org.slf4j/slf4j-api/ivy-1.7.16.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/slf4j/slf4j-api/1.7.16/slf4j-api-1.7.16.pom"/>
 				<evicted-by rev="1.7.25"/>
@@ -354,7 +339,6 @@
 				<caller organisation="io.dropwizard.metrics" name="metrics-json" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
 				<caller organisation="org.slf4j" name="slf4j-log4j12" conf="compile, runtime" rev="1.7.16" rev-constraint-default="1.7.16" rev-constraint-dynamic="1.7.16" callerrev="1.7.16"/>
 				<caller organisation="org.slf4j" name="jcl-over-slf4j" conf="compile, runtime" rev="1.7.16" rev-constraint-default="1.7.16" rev-constraint-dynamic="1.7.16" callerrev="1.7.16"/>
-				<caller organisation="default" name="antenas_2.11" conf="test, compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="0.1"/>
 				<caller organisation="org.apache.directory.api" name="api-asn1-api" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.0.0-M20"/>
 				<caller organisation="org.apache.parquet" name="parquet-common" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.8.3"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-graphite" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
@@ -375,8 +359,7 @@
 				</artifacts>
 			</revision>
 			<revision name="1.7.7" evicted="latest-revision" evicted-reason="" downloaded="false" searched="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="-1">
-				<evicted-by rev="1.7.25"/>
-				<caller organisation="org.clapper" name="grizzled-slf4j_2.11" conf="default, compile, runtime, master" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="1.0.2"/>
+				<evicted-by rev="1.7.16"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-core" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-jvm" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-graphite" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
@@ -397,7 +380,7 @@
 				<artifacts>
 				</artifacts>
 			</revision>
-			<revision name="1.7.5" evicted="latest-revision" evicted-reason="" downloaded="false" searched="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="-1">
+			<revision name="1.7.5" evicted="latest-revision" evicted-reason="" downloaded="false" searched="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="-1">
 				<evicted-by rev="1.7.25"/>
 				<caller organisation="org.slf4j" name="jul-to-slf4j" conf="compile, runtime" rev="1.7.16" rev-constraint-default="1.7.16" rev-constraint-dynamic="1.7.16" callerrev="1.7.16"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-common" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
@@ -412,7 +395,6 @@
 				<caller organisation="io.dropwizard.metrics" name="metrics-json" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
 				<caller organisation="org.slf4j" name="slf4j-log4j12" conf="compile, runtime" rev="1.7.16" rev-constraint-default="1.7.16" rev-constraint-dynamic="1.7.16" callerrev="1.7.16"/>
 				<caller organisation="org.slf4j" name="jcl-over-slf4j" conf="compile, runtime" rev="1.7.16" rev-constraint-default="1.7.16" rev-constraint-dynamic="1.7.16" callerrev="1.7.16"/>
-				<caller organisation="default" name="antenas_2.11" conf="test, compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="0.1"/>
 				<caller organisation="org.apache.directory.api" name="api-asn1-api" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.0.0-M20"/>
 				<caller organisation="org.apache.parquet" name="parquet-common" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.8.3"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-graphite" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
@@ -427,7 +409,6 @@
 				<caller organisation="org.apache.hadoop" name="hadoop-mapreduce-client-jobclient" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
 				<caller organisation="io.dropwizard.metrics" name="metrics-core" conf="compile, runtime" rev="1.7.7" rev-constraint-default="1.7.7" rev-constraint-dynamic="1.7.7" callerrev="3.1.5"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-auth" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
-				<caller organisation="org.slf4j" name="slf4j-simple" conf="default, compile, runtime, master" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.7.5"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-mapreduce-client-common" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="2.6.5"/>
 				<caller organisation="org.apache.orc" name="orc-core" conf="compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="1.4.4"/>
 				<artifacts>
@@ -568,18 +549,6 @@
 				<artifacts>
 					<artifact name="parquet-common" type="jar" ext="jar" status="no" details="" size="42064" time="0" location="/home/acp/.ivy2/cache/org.apache.parquet/parquet-common/jars/parquet-common-1.8.3.jar">
 						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/apache/parquet/parquet-common/1.8.3/parquet-common-1.8.3.jar"/>
-					</artifact>
-				</artifacts>
-			</revision>
-		</module>
-		<module organisation="org.slf4j" name="slf4j-simple">
-			<revision name="1.7.5" status="release" pubdate="20130325215226" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://www.slf4j.org" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="176">
-				<license name="MIT License" url="http://www.opensource.org/licenses/mit-license.php"/>
-				<metadata-artifact status="no" details="" size="4427" time="0" location="/home/acp/.ivy2/cache/org.slf4j/slf4j-simple/ivy-1.7.5.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.5/slf4j-simple-1.7.5.pom"/>
-				<caller organisation="default" name="antenas_2.11" conf="test, compile, runtime" rev="1.7.5" rev-constraint-default="1.7.5" rev-constraint-dynamic="1.7.5" callerrev="0.1"/>
-				<artifacts>
-					<artifact name="slf4j-simple" type="jar" ext="jar" status="no" details="" size="10680" time="0" location="/home/acp/.ivy2/cache/org.slf4j/slf4j-simple/jars/slf4j-simple-1.7.5.jar">
-						<origin-location is-local="false" location="https://repo1.maven.org/maven2/org/slf4j/slf4j-simple/1.7.5/slf4j-simple-1.7.5.jar"/>
 					</artifact>
 				</artifacts>
 			</revision>
@@ -2385,9 +2354,10 @@
 			</revision>
 		</module>
 		<module organisation="log4j" name="log4j">
-			<revision name="1.2.17" status="release" pubdate="20120526114339" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://logging.apache.org/log4j/1.2/" downloaded="false" searched="false" default="false" conf="compile, runtime(*), master(compile), runtime, compile(*), master" position="27">
+			<revision name="1.2.17" status="release" pubdate="20120526114339" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://logging.apache.org/log4j/1.2/" downloaded="false" searched="false" default="false" conf="default, compile, runtime(*), master(compile), runtime, default(compile), compile(*), master" position="27">
 				<license name="The Apache Software License, Version 2.0" url="http://www.apache.org/licenses/LICENSE-2.0.txt"/>
 				<metadata-artifact status="no" details="" size="3670" time="0" location="/home/acp/.ivy2/cache/log4j/log4j/ivy-1.2.17.xml" searched="false" origin-is-local="false" origin-location="https://repo1.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.pom"/>
+				<caller organisation="default" name="antenas_2.11" conf="test, compile, runtime" rev="1.2.17" rev-constraint-default="1.2.17" rev-constraint-dynamic="1.2.17" callerrev="0.1"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-hdfs" conf="compile, runtime" rev="1.2.17" rev-constraint-default="1.2.17" rev-constraint-dynamic="1.2.17" callerrev="2.6.5"/>
 				<caller organisation="org.apache.hadoop" name="hadoop-common" conf="compile, runtime" rev="1.2.17" rev-constraint-default="1.2.17" rev-constraint-dynamic="1.2.17" callerrev="2.6.5"/>
 				<caller organisation="org.apache.zookeeper" name="zookeeper" conf="compile, runtime" rev="1.2.16" rev-constraint-default="1.2.16" rev-constraint-dynamic="1.2.16" callerrev="3.4.6"/>
@@ -2788,7 +2758,6 @@
 				<caller organisation="org.apache.spark" name="spark-core_2.11" conf="default, compile, runtime, master" rev="2.11.8" rev-constraint-default="2.11.8" rev-constraint-dynamic="2.11.8" callerrev="2.3.1"/>
 				<caller organisation="org.typelevel" name="machinist_2.11" conf="compile, runtime" rev="2.11.8" rev-constraint-default="2.11.8" rev-constraint-dynamic="2.11.8" callerrev="0.6.1"/>
 				<caller organisation="org.scala-lang.modules" name="scala-xml_2.11" conf="compile, runtime" rev="2.11.8" rev-constraint-default="2.11.8" rev-constraint-dynamic="2.11.8" callerrev="1.0.4"/>
-				<caller organisation="org.clapper" name="grizzled-slf4j_2.11" conf="default, compile, runtime, master" rev="2.11.8" rev-constraint-default="2.11.8" rev-constraint-dynamic="2.11.8" callerrev="1.0.2"/>
 				<caller organisation="com.chuusai" name="shapeless_2.11" conf="compile, runtime" rev="2.11.8" rev-constraint-default="2.11.8" rev-constraint-dynamic="2.11.8" callerrev="2.3.2"/>
 				<caller organisation="org.typelevel" name="macro-compat_2.11" conf="compile, runtime" rev="2.11.8" rev-constraint-default="2.11.8" rev-constraint-dynamic="2.11.8" callerrev="1.1.1"/>
 				<caller organisation="org.json4s" name="json4s-core_2.11" conf="compile, runtime" rev="2.11.8" rev-constraint-default="2.11.8" rev-constraint-dynamic="2.11.8" callerrev="3.2.11"/>
