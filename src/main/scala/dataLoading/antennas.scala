@@ -13,10 +13,9 @@ import org.apache.spark.sql.functions._
 import org.apache.spark.sql.SparkSession
 import java.util.Properties
 import org.apache.commons.lang.StringUtils
-
 import org.apache.spark.mllib
 import com.typesafe.config.{Config, ConfigFactory}
-import grizzled.slf4j.Logger
+import org.apache.log4j.Logger
 
 
 object antennas {
@@ -24,7 +23,7 @@ object antennas {
 
   def load(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
-    val logger = Logger(this.getClass)
+    val logger = Logger.getLogger(this.getClass.getName)
     val parameters = ConfigFactory.parseResources("properties.conf").resolve()
     val antennasInput = parameters.getString("hdfs.input.antennas")
     val antennasData = parameters.getString("hdfs.cleanData.antennas")
@@ -37,8 +36,8 @@ object antennas {
       files.foreach(x => total += 1)
       //println(total)
       if (total > 0) {
-        logger.info("Existen ficheros de antenas para cargar, procede con la carga")
-        println("Existen ficheros de antenas para cargar, procede con la carga")
+        logger.info("Existen " + total + " ficheros de antenas para cargar, procede con la carga")
+        println("Existen " + total + " ficheros de antenas para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
         val df = sq.read.option("header", "true").option("delimiter", ";").csv(antennasInput).distinct()
         df.printSchema()

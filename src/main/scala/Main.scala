@@ -1,7 +1,7 @@
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SQLContext
 import dataLoading._
-import grizzled.slf4j.Logger
+import org.apache.log4j.Logger
 
 
 
@@ -11,7 +11,8 @@ object Main {
 
   def main(args: Array[String]) {
     val blockSize = 1024 * 1024 * 16
-    val logger = Logger(this.getClass)
+    //val logger = Logger(this.getClass)
+    val logger = Logger.getLogger(this.getClass.getName)
     val sparkConf = new SparkConf().setAppName("Antenas-Monetizacion").setMaster("local[3]")
     val sc = new SparkContext(sparkConf)
     val sq = new SQLContext(sc)

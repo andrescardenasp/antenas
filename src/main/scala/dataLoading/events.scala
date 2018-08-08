@@ -3,16 +3,22 @@ package dataLoading
 import java.net.URI
 
 import com.typesafe.config.ConfigFactory
-import grizzled.slf4j.Logger
+import org.apache.log4j.Logger
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Row, SQLContext}
 import org.apache.spark.sql.types.{StructField, StructType, _}
-import org.apache.spark.sql.functions.udf
+import org.apache.spark.sql.functions.{col, split, udf, date_format, from_unixtime, unix_timestamp, to_date}
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 object events {
 
-  val logger = Logger(this.getClass)
+  val logger = Logger.getLogger(this.getClass.getName)
+  // 05/06/2017-11:20:05.000
+  val DATE_TIME_FORMAT_INPUT = "dd/MM/yyyy-HH:mm:ss.SSS"
+  val DATE_TIME_FORMAT_CLEAN = "dd/MM/yyyy"
+  val dformatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_CLEAN)
 
   def load(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
@@ -21,6 +27,7 @@ object events {
     val eventsInput = parameters.getString("hdfs.input.events")
     val eventsData = parameters.getString("hdfs.cleanData.events")
     val hdfs = FileSystem.get(new URI(parameters.getString("hdfs.url")), conf)
+
     try {
 
       // Valido si hay ficheros para procesar
@@ -29,8 +36,8 @@ object events {
       files.foreach(x => total += 1)
       //println(total)
       if (total > 0) {
-        logger.info("Existen ficheros de eventos para cargar, procede con la carga")
-        println("Existen ficheros de eventos para cargar, procede con la carga")
+        logger.info("Existen " + total + " ficheros de eventos para cargar, procede con la carga")
+        println("Existen " + total + " ficheros de eventos para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
         //ClientId;Date;AntennaId
         val customSchema = StructType(Array(
@@ -41,15 +48,33 @@ object events {
 
         ))
 
-        val df = sq.read.option("header", "true").option("delimiter", ";").schema(customSchema).csv(eventsInput).distinct()
+        val df = sq.read.option("header", "true").option("delimiter", ";").schema(customSchema).csv(eventsInput)
         df.printSchema()
         df.show()
+        print(df.count())
 
         //val valid = udf(validateDf(_)) 1668927N
         //df.withColumn("validDate", valid('Date)).show
+        val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
+        val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
 
         val validDf = df.filter(validateDf(_))
+          .withColumn("Time", split(col("Date"), "-").getItem(1))
+          .withColumn("Date", split(col("Date"), "-").getItem(0))
+          .withColumn("Day", split(col("Date"), "/").getItem(0))
+          .withColumn("Month", split(col("Date"), "/").getItem(1))
+          .withColumn("Year", split(col("Date"), "/").getItem(2))
+          .withColumn("dayofweek", date_format(to_date(col("Date"), "dd/MM/yyyy"), "EEEE"))
+          .withColumn("Hour", split(col("Time"), ":").getItem(0))
+          .withColumn("Minute", split(col("Time"), ":").getItem(1))
+          .join(dfAntennas, "AntennaId")
+            .join(dfClients, "ClientId")
+
+        validDf.printSchema()
         validDf.show()
+        print(validDf.count())
+
+
 
         //df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(eventsData)
         //logger.info("Se ha escrito el fichero de eventos en HDFS")
@@ -74,23 +99,25 @@ object events {
   }
 
 
-  // 05/06/2017-11:20:05.000
-  val DATE_TIME_FORMAT = "dd/MM/yyyy-HH:mm:ss.SSS"
-
   def validateDf(row: Row): Boolean = {
 
     try {
-    //assume row.getString(1) with give Datetime string
-    java.time.LocalDateTime.parse (row.getString(1), java.time.format.DateTimeFormatter.ofPattern (DATE_TIME_FORMAT) )
-    //logger.info("Fecha validada correctamente" + dateInRow)
-    true
-  } catch {
-    case ex: java.time.format.DateTimeParseException => {
-    // Handle exception if you want
-    //logger.error("Fallo en la validación de fechas" + ex)
-    false
+      //assume row.getString(1) with give Datetime string
+      java.time.LocalDateTime.parse(row.getString(1), java.time.format.DateTimeFormatter.ofPattern(DATE_TIME_FORMAT_INPUT))
+      //logger.info("Fecha validada correctamente" + dateInRow)
+      true
+    } catch {
+      case ex: java.time.format.DateTimeParseException => {
+        // Handle exception if you want
+        //logger.error("Fallo en la validación de fechas" + ex)
+        false
+      }
+    }
   }
-  }
+
+
+  def getDayOfWeek(row: Row): String = {
+    LocalDate.parse(row.getString(1), dformatter).getDayOfWeek.toString
   }
 
 
