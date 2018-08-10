@@ -1,0 +1,10 @@
+.idea/
+target/
+project/
+.project
+.classpath
+.cache-main
+*.cache
+*.class
+*.iml
+*.log

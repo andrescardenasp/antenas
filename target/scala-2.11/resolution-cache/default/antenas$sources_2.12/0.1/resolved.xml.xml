@@ -4,7 +4,7 @@
 		module="antenas$sources_2.12"
 		revision="0.1"
 		status="integration"
-		publication="20180809194942"
+		publication="20180810182114"
 	/>
 	<configurations>
 		<conf name="default" visibility="public" description=""/>
