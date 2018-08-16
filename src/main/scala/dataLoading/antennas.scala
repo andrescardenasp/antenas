@@ -6,16 +6,21 @@ import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark
-import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 import org.apache.spark.sql._
-import org.apache.spark.sql.functions._
 import org.apache.spark.sql.SparkSession
 import java.util.Properties
+
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.mllib
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.log4j.Logger
+import magellan._
+import org.apache.spark.sql.magellan.dsl.expressions._
+
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types._
 
 
 object antennas {
@@ -39,14 +44,34 @@ object antennas {
         logger.info("Existen " + total + " ficheros de antenas para cargar, procede con la carga")
         println("Existen " + total + " ficheros de antenas para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
-        val df = sq.read.option("header", "true").option("delimiter", ";").csv(antennasInput).distinct()
+
+
+        val customSchema = StructType(Array(
+
+          StructField("AntennaId", StringType, false),
+          StructField("Intensity", IntegerType, false),
+          StructField("X", DoubleType, false),
+          StructField("Y", DoubleType, false)
+
+        ))
+
+
+        val dfCities = sq.read.parquet(parameters.getString("hdfs.cleanData.cities"))
+        dfCities.show()
+
+
+
+
+
+        val df = sq.read.option("header", "true").option("delimiter", ";")
+          .schema(customSchema).csv(antennasInput).withColumn("Point", point(col("X"), col("Y")))
         df.printSchema()
         df.show()
         df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(antennasData)
         logger.info("Se ha escrito el fichero de antenas en HDFS")
         println("Se ha escrito el fichero de antenas en HDFS")
         // Muevo los ficheros a OLD para historificar
-        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.antennasPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.antennasPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de antenas para cargar")

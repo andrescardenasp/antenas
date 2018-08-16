@@ -65,7 +65,7 @@ object cities {
         logger.info("Se ha escrito el fichero de ciudades en HDFS")
         println("Se ha escrito el fichero de ciudades en HDFS")
         // Muevo los ficheros a OLD para historificar
-        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.citiesPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.citiesPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de ciudades para cargar")
