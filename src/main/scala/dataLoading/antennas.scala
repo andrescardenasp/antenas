@@ -46,7 +46,7 @@ object antennas {
         // Leo los ficheros de la ruta en hdfs.
 
 
-        val customSchema = StructType(Array(
+        val customSchemaAntennas = StructType(Array(
 
           StructField("AntennaId", StringType, false),
           StructField("Intensity", IntegerType, false),
@@ -56,7 +56,31 @@ object antennas {
         ))
 
 
-        val dfCities = sq.read.parquet(parameters.getString("hdfs.cleanData.cities"))
+
+        val customSchemaCities = StructType(Array(
+
+          StructField("AntennaId", StringType, false),
+          StructField("Intensity", IntegerType, false),
+
+          StructField("lat1", DoubleType, false),
+          StructField("lon1", DoubleType, false),
+
+          StructField("lat2", DoubleType, false),
+          StructField("lon2", DoubleType, false),
+
+          StructField("lat3", DoubleType, false),
+          StructField("lon3", DoubleType, false),
+
+          StructField("lat4", DoubleType, false),
+          StructField("lon4", DoubleType, false),
+
+          StructField("lat5", DoubleType, false),
+          StructField("lon5", DoubleType, false)
+
+        ))
+
+
+        val dfCities = sq.read.schema(customSchemaCities).parquet(parameters.getString("hdfs.cleanData.cities"))
         dfCities.show()
 
 
@@ -64,7 +88,7 @@ object antennas {
 
 
         val df = sq.read.option("header", "true").option("delimiter", ";")
-          .schema(customSchema).csv(antennasInput).withColumn("Point", point(col("X"), col("Y")))
+          .schema(customSchemaAntennas).csv(antennasInput).withColumn("Point", point(col("X"), col("Y")))
         df.printSchema()
         df.show()
         df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(antennasData)
