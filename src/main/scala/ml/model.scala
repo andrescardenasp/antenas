@@ -59,7 +59,7 @@ object model {
       val encoderCity = new OneHotEncoder().setInputCol("CiudadIndex").setOutputCol("CiudadVec")
       val encoderDW = new OneHotEncoder().setInputCol("weekIndex").setOutputCol("weekVec")
 
-      val assembler = new VectorAssembler().setInputCols(Array("genderVec","nationalityVec","civilVec","economicVec","CiudadVec","weekVec")).setOutputCol("features")
+      val assembler = new VectorAssembler().setInputCols(Array("Hora","Edad","genderVec","nationalityVec","civilVec","economicVec","CiudadVec","weekVec")).setOutputCol("features")
 //"Hour","Age",
       val kmeans = new KMeans().setK(2).setFeaturesCol("features").setPredictionCol("prediction")
 
@@ -116,16 +116,6 @@ println("Comienzo la carga de los datos en limpio para alimentar al modelo.")
 
     }
 
-    /*  val indexer = new StringIndexer().setInputCol("gender").setOutputCol("genderIndex")
-  val encoder = new OneHotEncoder().setInputCol("genderIndex").setOutputCol("genderVec")
-  val assembler = new VectorAssembler().setInputCols(Array("income","genderVec")).setOutputCol("features")
-  val kmeans = new KMeans().setK(2).setFeaturesCol("features").setPredictionCol("prediction")
 
-  val pipeline = new Pipeline().setStages(Array(indexer, encoder, assembler, kmeans))
-
-  val kMeansPredictionModel = pipeline.fit(input)
-
-  val predictionResult = kMeansPredictionModel.transform(input)
-  */
   }
 }
