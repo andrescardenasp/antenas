@@ -117,10 +117,10 @@ object events {
     }
   }
 
-
-  def getDayOfWeek(row: Row): String = {
-    LocalDate.parse(row.getString(1), dformatter).getDayOfWeek.toString
-  }
+//
+//  def getDayOfWeek(row: Row): String = {
+//    LocalDate.parse(row.getString(1), dformatter).getDayOfWeek.toString
+//  }
 
 
 }
