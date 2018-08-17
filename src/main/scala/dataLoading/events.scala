@@ -55,9 +55,6 @@ object events {
         val totalEvents = df.count()
 
 
-        val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
-        val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
-
         val validDf = df.filter(validateDf(_))
           .withColumn("Time", split(col("Date"), "-").getItem(1))
           .withColumn("Date", split(col("Date"), "-").getItem(0))
@@ -67,21 +64,19 @@ object events {
           .withColumn("dayofweek", date_format(to_date(col("Date"), "dd/MM/yyyy"), "EEEE"))
           .withColumn("Hour", split(col("Time"), ":").getItem(0))
           .withColumn("Minute", split(col("Time"), ":").getItem(1))
-          .join(dfAntennas, "AntennaId")
-          .join(dfClients, "ClientId")
 
         validDf.printSchema()
         validDf.show()
         val totalEnrichedEvents = validDf.count()
         val filteredEvents = totalEvents-totalEnrichedEvents
-        logger.info("en total hay: " + totalEvents + "eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
-        println("en total hay: " + totalEvents + "eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
+        logger.info("en total hay: " + totalEvents + " eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
+        println("en total hay: " + totalEvents + " eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
 
 
         validDf.coalesce(1).write.mode(SaveMode.Overwrite).parquet(eventsData)
         logger.info("Se ha escrito el fichero de eventos en HDFS")
         // Muevo los ficheros a OLD para historificar
-        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.eventsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.eventsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de eventos para cargar")
@@ -116,6 +111,8 @@ object events {
       }
     }
   }
+
+
 
 //
 //  def getDayOfWeek(row: Row): String = {

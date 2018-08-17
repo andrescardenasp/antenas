@@ -1,6 +1,7 @@
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SQLContext
 import dataLoading._
+import ml._
 import org.apache.log4j.Logger
 
 
@@ -35,6 +36,10 @@ object Main {
     logger.info("Comienza carga y limpieza de eventos")
     events.load(sc, sq)
     logger.info("Termina carga y limpieza de eventos")
+
+    logger.info("Comienza la generación y predicción con el modelo Kmeans ")
+    model.modelPipeline(sc, sq)
+    logger.info("Termina la generación y predicción con el modelo Kmeans ")
 
 
   }

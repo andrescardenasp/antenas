@@ -49,7 +49,7 @@ object clients {
         df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(clientsData)
         logger.info("Se ha escrito el fichero de clientes en HDFS")
         // Muevo los ficheros a OLD para historificar
-        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.clientsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.clientsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de clientes para cargar")

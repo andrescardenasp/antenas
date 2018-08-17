@@ -6,18 +6,17 @@ import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark
-import org.apache.spark.sql.types._
 import org.apache.spark.sql._
 import org.apache.spark.sql.SparkSession
 import java.util.Properties
 
-import org.apache.commons.lang.StringUtils
-import org.apache.spark.mllib
+//import org.apache.commons.lang.StringUtils
+//import org.apache.spark.mllib
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.log4j.Logger
 import magellan._
+//import magellan.Polygon
 import org.apache.spark.sql.magellan.dsl.expressions._
-
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
@@ -62,26 +61,30 @@ object antennas {
           StructField("AntennaId", StringType, false),
           StructField("Intensity", IntegerType, false),
 
-          StructField("lat1", DoubleType, false),
-          StructField("lon1", DoubleType, false),
+          StructField("lat1", StringType, false),
+          StructField("lon1", StringType, false),
 
-          StructField("lat2", DoubleType, false),
+          StructField("lat2", StringType, false),
           StructField("lon2", DoubleType, false),
 
-          StructField("lat3", DoubleType, false),
-          StructField("lon3", DoubleType, false),
+          StructField("lat3", StringType, false),
+          StructField("lon3", StringType, false),
 
-          StructField("lat4", DoubleType, false),
-          StructField("lon4", DoubleType, false),
+          StructField("lat4", StringType, false),
+          StructField("lon4", StringType, false),
 
-          StructField("lat5", DoubleType, false),
-          StructField("lon5", DoubleType, false)
+          StructField("lat5", StringType, false),
+          StructField("lon5", StringType, false)
 
         ))
 
 
-        val dfCities = sq.read.schema(customSchemaCities).parquet(parameters.getString("hdfs.cleanData.cities"))
-        dfCities.show()
+
+
+        /*val dfCities = sq.read.schema(customSchemaCities).parquet(parameters.getString("hdfs.cleanData.cities"))
+            .withColumn("P1", point(col("lat1"),col("lon1") ) )
+        dfCities.show()*/
+
 
 
 
