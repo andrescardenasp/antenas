@@ -44,11 +44,49 @@ object model {
       }
 
       val cityUdf = udf(getCity _)
+
+      val indexerGender = new StringIndexer().setInputCol("Gender").setOutputCol("genderIndex")
+      val indexerNat = new StringIndexer().setInputCol("Nationality").setOutputCol("nationalityIndex")
+      val indexerCivil = new StringIndexer().setInputCol("CivilStatus").setOutputCol("civilIndex")
+      val indexerEconomic = new StringIndexer().setInputCol("SocioeconomicLevel").setOutputCol("economicIndex")
+      val indexerCity = new StringIndexer().setInputCol("Ciudad").setOutputCol("CiudadIndex")
+      val indexerDW = new StringIndexer().setInputCol("dayofweek").setOutputCol("weekIndex")
+
+      val encoderGender = new OneHotEncoder().setInputCol("genderIndex").setOutputCol("genderVec")
+      val encoderNat = new OneHotEncoder().setInputCol("nationalityIndex").setOutputCol("nationalityVec")
+      val encoderCivil = new OneHotEncoder().setInputCol("civilIndex").setOutputCol("civilVec")
+      val encoderEconomic = new OneHotEncoder().setInputCol("economicIndex").setOutputCol("economicVec")
+      val encoderCity = new OneHotEncoder().setInputCol("CiudadIndex").setOutputCol("CiudadVec")
+      val encoderDW = new OneHotEncoder().setInputCol("weekIndex").setOutputCol("weekVec")
+
+      val assembler = new VectorAssembler().setInputCols(Array("genderVec","nationalityVec","civilVec","economicVec","CiudadVec","weekVec")).setOutputCol("features")
+//"Hour","Age",
+      val kmeans = new KMeans().setK(2).setFeaturesCol("features").setPredictionCol("prediction")
+
+      val pipeline = new Pipeline().setStages(Array(
+        indexerGender,
+        indexerNat,
+        indexerCivil,
+        indexerEconomic,
+        indexerCity,
+        indexerDW,
+        encoderGender,
+        encoderNat,
+        encoderCivil,
+        encoderEconomic,
+        encoderCity,
+        encoderDW,
+        assembler,
+        kmeans
+      ))
+
+      val toInt    = udf[Int, String]( _.toInt)
+      val toDouble = udf[Double, String]( _.toDouble)
 println("Comienzo la carga de los datos en limpio para alimentar al modelo.")
       val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
       val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
       val dfEvents = sq.read.parquet(parameters.getString("hdfs.cleanData.events"))
-        .join(dfAntennas, "AntennaId")
+        //.join(dfAntennas, "AntennaId")
         .join(dfClients, "ClientId")
         .drop("Date")
         .drop("Time")
@@ -57,8 +95,16 @@ println("Comienzo la carga de los datos en limpio para alimentar al modelo.")
         .drop("Day")
         .drop("Minute")
         .withColumn("Ciudad", cityUdf(col("AntennaId")))
+      .withColumn("Hora", toInt(col("Hour")) )
+        .withColumn("Edad", toInt(col("Age")) )
 
       dfEvents.show()
+
+      val kMeansPredictionModel = pipeline.fit(dfEvents)
+
+
+      val predictionResult = kMeansPredictionModel.transform(dfEvents)
+      predictionResult.show()
 
 
     } catch {
