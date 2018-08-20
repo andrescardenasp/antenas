@@ -20,6 +20,10 @@ object Main {
     sc.hadoopConfiguration.setInt( "dfs.blocksize", blockSize )
     sc.hadoopConfiguration.setInt( "parquet.block.size", blockSize )
 
+
+    model
+
+
     // Carga y limpieza de ficheros
     logger.info("Comienza carga y limpieza de Ciudades")
     cities.load(sc, sq)

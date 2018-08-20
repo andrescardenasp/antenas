@@ -30,6 +30,7 @@ object model {
     val conf = sc.hadoopConfiguration
     val parameters = ConfigFactory.parseResources("properties.conf").resolve()
     val predictionsData = parameters.getString("hdfs.modeldata.predictions")
+    val model = parameters.getString("hdfs.modeldata.model")
     val hdfs = FileSystem.get(new URI(parameters.getString("hdfs.url")), conf)
 
 
@@ -109,6 +110,9 @@ println("Comienzo la carga de los datos en limpio para alimentar al modelo.")
       predictionResult.coalesce(1).write.mode(SaveMode.Overwrite).parquet(predictionsData)
       logger.info("Se ha escrito fichero con los resultados despues de aplicar Kmeas")
       println("Se ha escrito fichero con los resultados despues de aplicar Kmeas")
+
+      kMeansPredictionModel.save(model)
+
 
     } catch {
 
