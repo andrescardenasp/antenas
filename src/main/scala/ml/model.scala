@@ -29,10 +29,9 @@ object model {
   def modelPipeline(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
     val parameters = ConfigFactory.parseResources("properties.conf").resolve()
-    val eventsData = parameters.getString("hdfs.cleanData.events")
+    val predictionsData = parameters.getString("hdfs.modeldata.predictions")
     val hdfs = FileSystem.get(new URI(parameters.getString("hdfs.url")), conf)
-    val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
-    val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
+
 
 
     try {
@@ -104,8 +103,12 @@ println("Comienzo la carga de los datos en limpio para alimentar al modelo.")
 
 
       val predictionResult = kMeansPredictionModel.transform(dfEvents)
+          .drop("genderVec","nationalityVec", "civilVec", "economicVec", "CiudadVec", "weekVec", "features","genderIndex","nationalityIndex","civilIndex","economicIndex","CiudadIndex","weekIndex","Hora", "Edad")
       predictionResult.show()
 
+      predictionResult.coalesce(1).write.mode(SaveMode.Overwrite).parquet(predictionsData)
+      logger.info("Se ha escrito fichero con los resultados despues de aplicar Kmeas")
+      println("Se ha escrito fichero con los resultados despues de aplicar Kmeas")
 
     } catch {
 
