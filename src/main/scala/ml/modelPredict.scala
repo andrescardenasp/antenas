@@ -6,21 +6,17 @@ package ml
 import java.net.URI
 
 import com.typesafe.config.ConfigFactory
-import org.apache.spark.sql.types._
-import org.apache.commons.lang.StringUtils
-import org.apache.hadoop.fs.{FileSystem, Path}
+import org.apache.hadoop.fs.FileSystem
 import org.apache.log4j.Logger
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.types.{StructField, StructType, _}
-import org.apache.spark.sql.{SQLContext, _}
-import org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer}
-import org.apache.spark.ml.feature.VectorAssembler
+import org.apache.spark.ml.{Pipeline, PipelineModel}
 import org.apache.spark.ml.clustering.KMeans
-import org.apache.spark.ml.Pipeline
+import org.apache.spark.ml.feature.{OneHotEncoder, StringIndexer, VectorAssembler}
 import org.apache.spark.sql.functions.{col, udf}
+import org.apache.spark.sql.{SQLContext, _}
 
 
-object model {
+object modelPredict {
 
 
   val logger = Logger.getLogger(this.getClass.getName)
@@ -30,7 +26,8 @@ object model {
     val conf = sc.hadoopConfiguration
     val parameters = ConfigFactory.parseResources("properties.conf").resolve()
     val predictionsData = parameters.getString("hdfs.modeldata.predictions")
-    val model = parameters.getString("hdfs.modeldata.model")
+    val modelLocation = parameters.getString("hdfs.modeldata.model")
+    val pipelineLocation = parameters.getString("hdfs.modeldata.pipeline")
     val hdfs = FileSystem.get(new URI(parameters.getString("hdfs.url")), conf)
 
 
@@ -45,7 +42,9 @@ object model {
 
       val cityUdf = udf(getCity _)
 
+/*
       val indexerGender = new StringIndexer().setInputCol("Gender").setOutputCol("genderIndex")
+
       val indexerNat = new StringIndexer().setInputCol("Nationality").setOutputCol("nationalityIndex")
       val indexerCivil = new StringIndexer().setInputCol("CivilStatus").setOutputCol("civilIndex")
       val indexerEconomic = new StringIndexer().setInputCol("SocioeconomicLevel").setOutputCol("economicIndex")
@@ -79,9 +78,10 @@ object model {
         assembler,
         kmeans
       ))
-
+*/
       val toInt    = udf[Int, String]( _.toInt)
       val toDouble = udf[Double, String]( _.toDouble)
+
 println("Comienzo la carga de los datos en limpio para alimentar al modelo.")
       val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
       val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
@@ -100,18 +100,17 @@ println("Comienzo la carga de los datos en limpio para alimentar al modelo.")
 
       dfEvents.show()
 
-      val kMeansPredictionModel = pipeline.fit(dfEvents)
-
+      //val kMeansPredictionModel = pipeline.fit(dfEvents)
+      val kMeansPredictionModel = PipelineModel.read.load(modelLocation)
 
       val predictionResult = kMeansPredictionModel.transform(dfEvents)
           .drop("genderVec","nationalityVec", "civilVec", "economicVec", "CiudadVec", "weekVec", "features","genderIndex","nationalityIndex","civilIndex","economicIndex","CiudadIndex","weekIndex","Hora", "Edad")
       predictionResult.show()
 
       predictionResult.coalesce(1).write.mode(SaveMode.Overwrite).parquet(predictionsData)
-      logger.info("Se ha escrito fichero con los resultados despues de aplicar Kmeas")
-      println("Se ha escrito fichero con los resultados despues de aplicar Kmeas")
+      logger.info("Se ha escrito fichero con los resultados despues de aplicar Kmeans")
+      println("Se ha escrito fichero con los resultados despues de aplicar Kmeans")
 
-      kMeansPredictionModel.save(model)
 
 
     } catch {
