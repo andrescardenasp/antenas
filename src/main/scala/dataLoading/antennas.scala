@@ -14,12 +14,10 @@ import java.util.Properties
 //import org.apache.spark.mllib
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.log4j.Logger
-import magellan._
-//import magellan.Polygon
-import org.apache.spark.sql.magellan.dsl.expressions._
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
+import common._
 
 
 object antennas {
@@ -55,11 +53,11 @@ object antennas {
         ))
 
 
-
+/*
         val customSchemaCities = StructType(Array(
 
-          StructField("AntennaId", StringType, false),
-          StructField("Intensity", IntegerType, false),
+          StructField("CityName", StringType, false),
+          StructField("Population", IntegerType, false),
 
           StructField("lat1", StringType, false),
           StructField("lon1", StringType, false),
@@ -76,22 +74,27 @@ object antennas {
           StructField("lat5", StringType, false),
           StructField("lon5", StringType, false)
 
-        ))
+        ))*/
 
 
 
 
-        /*val dfCities = sq.read.schema(customSchemaCities).parquet(parameters.getString("hdfs.cleanData.cities"))
-            .withColumn("P1", point(col("lat1"),col("lon1") ) )
-        dfCities.show()*/
-
+        val dfCities = sq.read.parquet(parameters.getString("hdfs.cleanData.cities"))
+        println("despues de leer el fichero de ciudades con poligono")
+        dfCities.show()
 
 
 
 
 
         val df = sq.read.option("header", "true").option("delimiter", ";")
-          .schema(customSchemaAntennas).csv(antennasInput).withColumn("Point", point(col("X"), col("Y")))
+          .schema(customSchemaAntennas).csv(antennasInput)
+          .withColumn("antennaId",monotonicallyIncreasingId)
+          .withColumn("Point", utils.getPointUDF(col("X"), col("Y")))
+          .crossJoin(dfCities)
+            .withColumn("antennaInCity", utils.pointInPolygonUDF(col("Point"),col("CityPolygon")))
+
+
         df.printSchema()
         df.show()
         df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(antennasData)

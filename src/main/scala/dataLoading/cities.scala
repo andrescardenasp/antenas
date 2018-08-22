@@ -12,23 +12,29 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.SparkSession
 import java.util.Properties
+
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.mllib
 import com.typesafe.config.{Config, ConfigFactory}
+import common._
 import org.apache.log4j.Logger
+import org.apache.spark.sql.SQLContext
+
 
 
 
 object cities {
 
+  val logger: Logger = Logger.getLogger(this.getClass.getName)
+
 
   def load(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
-    val logger = Logger.getLogger(this.getClass.getName)
     val parameters = ConfigFactory.parseResources("properties.conf").resolve()
     val citiesInput = parameters.getString("hdfs.input.cities")
     val citiesData = parameters.getString("hdfs.cleanData.cities")
     val hdfs = FileSystem.get(new URI(parameters.getString("hdfs.url")), conf)
+    import sq.implicits._
     try {
 
 // Valido si hay ficheros para procesar
@@ -45,20 +51,22 @@ object cities {
         //    df.show()
 
         val dfGeo = df.withColumn("lat1", split(col("X1"), ",").getItem(0))
-          .withColumn("lon1", split(col("X1"), ",").getItem(1))
-          .withColumn("lat2", split(col("X2"), ",").getItem(0))
-          .withColumn("lon2", split(col("X2"), ",").getItem(1))
-          .withColumn("lat3", split(col("X3"), ",").getItem(0))
-          .withColumn("lon3", split(col("X3"), ",").getItem(1))
-          .withColumn("lat4", split(col("X4"), ",").getItem(0))
-          .withColumn("lon4", split(col("X4"), ",").getItem(1))
-          .withColumn("lat5", split(col("X5"), ",").getItem(0))
-          .withColumn("lon5", split(col("X5"), ",").getItem(1))
+          .withColumn("lon1", utils.toDouble(split(col("X1"), ",").getItem(1)))
+          .withColumn("lat2", utils.toDouble(split(col("X2"), ",").getItem(0)))
+          .withColumn("lon2", utils.toDouble(split(col("X2"), ",").getItem(1)))
+          .withColumn("lat3", utils.toDouble(split(col("X3"), ",").getItem(0)))
+          .withColumn("lon3", utils.toDouble(split(col("X3"), ",").getItem(1)))
+          .withColumn("lat4", utils.toDouble(split(col("X4"), ",").getItem(0)))
+          .withColumn("lon4", utils.toDouble(split(col("X4"), ",").getItem(1)))
+          .withColumn("lat5", utils.toDouble(split(col("X5"), ",").getItem(0)))
+          .withColumn("lon5", utils.toDouble(split(col("X5"), ",").getItem(1)))
           .drop("X1")
           .drop("X2")
           .drop("X3")
           .drop("X4")
           .drop("X5")
+          .withColumn("CityPolygon", utils.getCityPolygonUDF(col("lat1"),col("lon1"),col("lat2"),col("lon2"),col("lat3"),col("lon3"),col("lat4"),col("lon4"), col("lat5"),col("lon5")))
+          .withColumn("cityId",monotonicallyIncreasingId)
         dfGeo.printSchema()
         dfGeo.show()
         dfGeo.coalesce(1).write.mode(SaveMode.Overwrite).parquet(citiesData)

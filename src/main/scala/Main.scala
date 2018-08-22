@@ -49,7 +49,7 @@ object Main {
     logger.info("Comienza carga y limpieza de Antenas.")
     antennas.load(sc, sq)
     logger.info("Termina carga y limpieza de Antenas.")
-
+/*
     logger.info("Comienza carga y limpieza de clientes.")
     clients.load(sc, sq)
     logger.info("Termina carga y limpieza de clientes.")
@@ -69,7 +69,7 @@ object Main {
       modelPredict.modelPipeline(sc, sq)
       logger.info("Termina predicción con el Kmeans previamente entrenado.")
     }
-
+*/
 
   }
 }

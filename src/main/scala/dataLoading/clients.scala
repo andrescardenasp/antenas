@@ -13,10 +13,11 @@ import org.apache.spark.sql.{SQLContext, _}
 
 object clients {
 
+  val logger: Logger = Logger.getLogger(this.getClass.getName)
 
   def load(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
-    val logger = Logger.getLogger(this.getClass.getName)
+
     val parameters = ConfigFactory.parseResources("properties.conf").resolve()
     val clientsInput = parameters.getString("hdfs.input.clients")
     val clientsData = parameters.getString("hdfs.cleanData.clients")
