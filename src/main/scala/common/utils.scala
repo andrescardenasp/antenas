@@ -1,15 +1,10 @@
 package common
 
 import org.apache.spark.sql.functions.udf
-import common.PolygonUtils
+//import common.PolygonUtils
+import org.apache.spark.sql.Row
 
 object utils {
-
-  def getCity(antenna: String): String = {
-    if (antenna == "A01") "Madrid"
-    else "Logroño"
-
-  }
 
   val toInt = udf[Int, String](_.toInt)
   val toDouble = udf[Double, String](_.toDouble)
@@ -48,6 +43,25 @@ object utils {
 
   val pointInPolygonUDF = udf[Boolean, GeoPoint, Polygon](getAntennaInCity(_,_))
 
-  val testudf = udf[Polygon, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double, Double](getCityPolygon(_, _, _, _, _, _, _, _, _, _))
+
+  def antennaInCityFilter(row: Row): Boolean = {
+
+    val CityPolList = List(
+      GeoPoint(row.getDouble(row.fieldIndex("lat1")), row.getDouble(row.fieldIndex("lon1"))),
+      GeoPoint(row.getDouble(row.fieldIndex("lat2")), row.getDouble(row.fieldIndex("lon2"))),
+      GeoPoint(row.getDouble(row.fieldIndex("lat3")), row.getDouble(row.fieldIndex("lon3"))),
+      GeoPoint(row.getDouble(row.fieldIndex("lat4")), row.getDouble(row.fieldIndex("lon4"))),
+      GeoPoint(row.getDouble(row.fieldIndex("lat5")), row.getDouble(row.fieldIndex("lon5")))
+    )
+
+    val CityPol = Polygon(CityPolList)
+
+    val antennaPoint = GeoPoint(row.getDouble(row.fieldIndex("X")), row.getDouble(row.fieldIndex("Y")))
+
+    PolygonUtils.pointInPolygon(antennaPoint,CityPol)
+
+
+  }
+
 
 }

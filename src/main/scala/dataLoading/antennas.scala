@@ -53,33 +53,7 @@ object antennas {
         ))
 
 
-/*
-        val customSchemaCities = StructType(Array(
-
-          StructField("CityName", StringType, false),
-          StructField("Population", IntegerType, false),
-
-          StructField("lat1", StringType, false),
-          StructField("lon1", StringType, false),
-
-          StructField("lat2", StringType, false),
-          StructField("lon2", DoubleType, false),
-
-          StructField("lat3", StringType, false),
-          StructField("lon3", StringType, false),
-
-          StructField("lat4", StringType, false),
-          StructField("lon4", StringType, false),
-
-          StructField("lat5", StringType, false),
-          StructField("lon5", StringType, false)
-
-        ))*/
-
-
-
-
-        val dfCities = sq.read.parquet(parameters.getString("hdfs.cleanData.cities"))
+        val dfCities = sq.read.parquet(parameters.getString("hdfs.cleanData.cities")).drop("Population")
         println("despues de leer el fichero de ciudades con poligono")
         dfCities.show()
 
@@ -89,10 +63,13 @@ object antennas {
 
         val df = sq.read.option("header", "true").option("delimiter", ";")
           .schema(customSchemaAntennas).csv(antennasInput)
-          .withColumn("antennaId",monotonicallyIncreasingId)
-          .withColumn("Point", utils.getPointUDF(col("X"), col("Y")))
           .crossJoin(dfCities)
-            .withColumn("antennaInCity", utils.pointInPolygonUDF(col("Point"),col("CityPolygon")))
+            //.withColumn("antennaInCity", utils.pointInPolygonUDF(col("Point"),col("CityPolygon")))
+            .filter(utils.antennaInCityFilter(_))
+            .drop("lat1").drop("lat2").drop("lat3").drop("lat4").drop("lat5")
+          .drop("lon1").drop("lon2").drop("lon3").drop("lon4").drop("lon5")
+            .drop("CityName")
+
 
 
         df.printSchema()

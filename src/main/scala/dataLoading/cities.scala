@@ -50,7 +50,7 @@ object cities {
         //df.printSchema()
         //    df.show()
 
-        val dfGeo = df.withColumn("lat1", split(col("X1"), ",").getItem(0))
+        val dfGeo = df.withColumn("lat1", utils.toDouble(split(col("X1"), ",").getItem(0)))
           .withColumn("lon1", utils.toDouble(split(col("X1"), ",").getItem(1)))
           .withColumn("lat2", utils.toDouble(split(col("X2"), ",").getItem(0)))
           .withColumn("lon2", utils.toDouble(split(col("X2"), ",").getItem(1)))
@@ -65,8 +65,7 @@ object cities {
           .drop("X3")
           .drop("X4")
           .drop("X5")
-          .withColumn("CityPolygon", utils.getCityPolygonUDF(col("lat1"),col("lon1"),col("lat2"),col("lon2"),col("lat3"),col("lon3"),col("lat4"),col("lon4"), col("lat5"),col("lon5")))
-          .withColumn("cityId",monotonicallyIncreasingId)
+          .withColumn("cityId", monotonically_increasing_id())
         dfGeo.printSchema()
         dfGeo.show()
         dfGeo.coalesce(1).write.mode(SaveMode.Overwrite).parquet(citiesData)

@@ -30,13 +30,12 @@ object modelPredict {
 
     try {
 
-      val cityUdf = udf(utils.getCity _)
 
       println("Comienza la carga de los datos en limpio para alimentar al modelo.")
       val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
       val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
       val dfEvents = sq.read.parquet(parameters.getString("hdfs.cleanData.events"))
-        //.join(dfAntennas, "AntennaId")
+        .join(dfAntennas, "AntennaId")
         .join(dfClients, "ClientId")
         .drop("Date")
         .drop("Time")
@@ -44,7 +43,6 @@ object modelPredict {
         .drop("Year")
         .drop("Day")
         .drop("Minute")
-        .withColumn("Ciudad", cityUdf(col("AntennaId")))
         .withColumn("Hora", utils.toInt(col("Hour")))
         .withColumn("Edad", utils.toInt(col("Age")))
 

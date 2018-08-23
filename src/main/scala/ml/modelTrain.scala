@@ -37,23 +37,22 @@ object modelTrain {
     try {
 
 
-      val cityUdf = udf(utils.getCity _)
-
       val indexerGender = new StringIndexer().setInputCol("Gender").setOutputCol("genderIndex")
       val indexerNat = new StringIndexer().setInputCol("Nationality").setOutputCol("nationalityIndex")
       val indexerCivil = new StringIndexer().setInputCol("CivilStatus").setOutputCol("civilIndex")
       val indexerEconomic = new StringIndexer().setInputCol("SocioeconomicLevel").setOutputCol("economicIndex")
-      val indexerCity = new StringIndexer().setInputCol("Ciudad").setOutputCol("CiudadIndex")
+      //val indexerCity = new StringIndexer().setInputCol("Ciudad").setOutputCol("CiudadIndex")
       val indexerDW = new StringIndexer().setInputCol("dayofweek").setOutputCol("weekIndex")
 
       val encoderGender = new OneHotEncoder().setInputCol("genderIndex").setOutputCol("genderVec")
       val encoderNat = new OneHotEncoder().setInputCol("nationalityIndex").setOutputCol("nationalityVec")
       val encoderCivil = new OneHotEncoder().setInputCol("civilIndex").setOutputCol("civilVec")
       val encoderEconomic = new OneHotEncoder().setInputCol("economicIndex").setOutputCol("economicVec")
-      val encoderCity = new OneHotEncoder().setInputCol("CiudadIndex").setOutputCol("CiudadVec")
+     // val encoderCity = new OneHotEncoder().setInputCol("CiudadIndex").setOutputCol("CiudadVec")
       val encoderDW = new OneHotEncoder().setInputCol("weekIndex").setOutputCol("weekVec")
 
-      val assembler = new VectorAssembler().setInputCols(Array("Hora", "Edad", "genderVec", "nationalityVec", "civilVec", "economicVec", "CiudadVec", "weekVec")).setOutputCol("features")
+      val assembler = new VectorAssembler().setInputCols(Array("Hora", "Edad", "genderVec", "nationalityVec", "civilVec", "economicVec", "cityId","weekVec")).setOutputCol("features")
+      //val assembler = new VectorAssembler().setInputCols(Array("Hora", "Edad", "genderVec", "nationalityVec", "civilVec", "economicVec", "CiudadVec", "weekVec")).setOutputCol("features")
       //"Hour","Age",
       val kmeans = new KMeans().setK(2).setFeaturesCol("features").setPredictionCol("prediction")
 
@@ -62,13 +61,13 @@ object modelTrain {
         indexerNat,
         indexerCivil,
         indexerEconomic,
-        indexerCity,
+        //indexerCity,
         indexerDW,
         encoderGender,
         encoderNat,
         encoderCivil,
         encoderEconomic,
-        encoderCity,
+        //encoderCity,
         encoderDW,
         assembler,
         kmeans
@@ -80,7 +79,7 @@ object modelTrain {
       val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
       val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
       val dfEvents = sq.read.parquet(parameters.getString("hdfs.cleanData.events"))
-        //.join(dfAntennas, "AntennaId")
+        .join(dfAntennas, "AntennaId")
         .join(dfClients, "ClientId")
         .drop("Date")
         .drop("Time")
@@ -88,7 +87,6 @@ object modelTrain {
         .drop("Year")
         .drop("Day")
         .drop("Minute")
-        .withColumn("Ciudad", cityUdf(col("AntennaId")))
         .withColumn("Hora", utils.toInt(col("Hour")))
         .withColumn("Edad", utils.toInt(col("Age")))
 
