@@ -37,10 +37,10 @@ object modelTrain {
     try {
 
 
-      val indexerGender = new StringIndexer().setInputCol("Gender").setOutputCol("genderIndex")
-      val indexerNat = new StringIndexer().setInputCol("Nationality").setOutputCol("nationalityIndex")
-      val indexerCivil = new StringIndexer().setInputCol("CivilStatus").setOutputCol("civilIndex")
-      val indexerEconomic = new StringIndexer().setInputCol("SocioeconomicLevel").setOutputCol("economicIndex")
+      val indexerGender = new StringIndexer().setInputCol("gender").setOutputCol("genderIndex")
+      val indexerNat = new StringIndexer().setInputCol("nationality").setOutputCol("nationalityIndex")
+      val indexerCivil = new StringIndexer().setInputCol("civilstatus").setOutputCol("civilIndex")
+      val indexerEconomic = new StringIndexer().setInputCol("socioeconomiclevel").setOutputCol("economicIndex")
       //val indexerCity = new StringIndexer().setInputCol("Ciudad").setOutputCol("CiudadIndex")
       val indexerDW = new StringIndexer().setInputCol("dayofweek").setOutputCol("weekIndex")
 
@@ -51,7 +51,7 @@ object modelTrain {
      // val encoderCity = new OneHotEncoder().setInputCol("CiudadIndex").setOutputCol("CiudadVec")
       val encoderDW = new OneHotEncoder().setInputCol("weekIndex").setOutputCol("weekVec")
 
-      val assembler = new VectorAssembler().setInputCols(Array("Hora", "Edad", "genderVec", "nationalityVec", "civilVec", "economicVec", "cityId","weekVec")).setOutputCol("features")
+      val assembler = new VectorAssembler().setInputCols(Array("Hora", "Edad", "genderVec", "nationalityVec", "civilVec", "economicVec", "cityid","weekVec")).setOutputCol("features")
       //val assembler = new VectorAssembler().setInputCols(Array("Hora", "Edad", "genderVec", "nationalityVec", "civilVec", "economicVec", "CiudadVec", "weekVec")).setOutputCol("features")
       //"Hour","Age",
       val kmeans = new KMeans().setK(2).setFeaturesCol("features").setPredictionCol("prediction")
@@ -79,16 +79,16 @@ object modelTrain {
       val dfAntennas = sq.read.parquet(parameters.getString("hdfs.cleanData.antennas"))
       val dfClients = sq.read.parquet(parameters.getString("hdfs.cleanData.clients"))
       val dfEvents = sq.read.parquet(parameters.getString("hdfs.cleanData.events"))
-        .join(dfAntennas, "AntennaId")
-        .join(dfClients, "ClientId")
-        .drop("Date")
-        .drop("Time")
-        .drop("Month")
-        .drop("Year")
-        .drop("Day")
-        .drop("Minute")
-        .withColumn("Hora", utils.toInt(col("Hour")))
-        .withColumn("Edad", utils.toInt(col("Age")))
+        .join(dfAntennas, "antennaid")
+        .join(dfClients, "clientid")
+        .drop("date")
+        .drop("time")
+        .drop("month")
+        .drop("year")
+        .drop("day")
+        .drop("minute")
+        .withColumn("Hora", utils.toInt(col("hour")))
+        .withColumn("Edad", utils.toInt(col("age")))
 
       dfEvents.show()
 

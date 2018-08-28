@@ -56,14 +56,16 @@ object events {
 
 
         val validDf = df.filter(validateDf(_))
-          .withColumn("Time", split(col("Date"), "-").getItem(1))
-          .withColumn("Date", split(col("Date"), "-").getItem(0))
-          .withColumn("Day", split(col("Date"), "/").getItem(0))
-          .withColumn("Month", split(col("Date"), "/").getItem(1))
-          .withColumn("Year", split(col("Date"), "/").getItem(2))
+          .withColumnRenamed("ClientId","clientid")
+          .withColumnRenamed("AntennaId","antennaid")
+          .withColumn("time", split(col("Date"), "-").getItem(1))
+          .withColumn("date", split(col("Date"), "-").getItem(0))
+          .withColumn("day", split(col("Date"), "/").getItem(0))
+          .withColumn("month", split(col("Date"), "/").getItem(1))
+          .withColumn("year", split(col("Date"), "/").getItem(2))
           .withColumn("dayofweek", date_format(to_date(col("Date"), "dd/MM/yyyy"), "EEEE"))
-          .withColumn("Hour", split(col("Time"), ":").getItem(0))
-          .withColumn("Minute", split(col("Time"), ":").getItem(1))
+          .withColumn("hour", split(col("Time"), ":").getItem(0))
+          .withColumn("minute", split(col("Time"), ":").getItem(1))
 
         validDf.printSchema()
         validDf.show()

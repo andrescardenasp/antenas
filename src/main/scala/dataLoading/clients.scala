@@ -36,12 +36,12 @@ object clients {
 
         val customSchema = StructType(Array(
 
-          StructField("ClientId", StringType, false),
-          StructField("Age", IntegerType, true),
-          StructField("Gender", StringType, true),
-          StructField("Nationality", StringType, true),
-            StructField("CivilStatus", StringType, true),
-          StructField("SocioeconomicLevel", StringType, true)
+          StructField("clientid", StringType, false),
+          StructField("age", IntegerType, true),
+          StructField("gender", StringType, true),
+          StructField("nationality", StringType, true),
+            StructField("civilstatus", StringType, true),
+          StructField("socioeconomiclevel", StringType, true)
         ))
 
         val df = sq.read.option("header", "true").option("delimiter", ";").schema(customSchema).csv(clientsInput).distinct()

@@ -45,10 +45,10 @@ object antennas {
 
         val customSchemaAntennas = StructType(Array(
 
-          StructField("AntennaId", StringType, false),
-          StructField("Intensity", IntegerType, false),
-          StructField("X", DoubleType, false),
-          StructField("Y", DoubleType, false)
+          StructField("antennaid", StringType, false),
+          StructField("intensity", IntegerType, false),
+          StructField("x", DoubleType, false),
+          StructField("y", DoubleType, false)
 
         ))
 

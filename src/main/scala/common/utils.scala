@@ -56,7 +56,7 @@ object utils {
 
     val CityPol = Polygon(CityPolList)
 
-    val antennaPoint = GeoPoint(row.getDouble(row.fieldIndex("X")), row.getDouble(row.fieldIndex("Y")))
+    val antennaPoint = GeoPoint(row.getDouble(row.fieldIndex("y")), row.getDouble(row.fieldIndex("x")))
 
     PolygonUtils.pointInPolygon(antennaPoint,CityPol)
 
