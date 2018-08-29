@@ -39,22 +39,47 @@ object Main {
     }
 
 
-
     if (execMode == "1") { // 1 = Train
-      loadData()
+      //loadData()
       logger.info("Comienza entrenamiento del modelo Kmeans.")
       modelTrain.modelPipeline(sc, sq)
       logger.info("Termina el entrenamiento del modelo Kmeans.")
     }
 
     else if (execMode == "2") { // 2 = Predict
-      loadData()
+     // loadData()
       logger.info("Comienza predicción con el Kmeans previamente entrenado.")
       modelPredict.modelPipeline(sc, sq)
       logger.info("Termina predicción con el Kmeans previamente entrenado.")
     }
 
-    else if (execMode == "3") { // 1 = Get schemas mode
+    else if (execMode == "3") { // 3 = Get schemas mode
+      getSchemas()
+    }
+
+
+    def loadData(): Unit = {
+
+      // Carga y limpieza de ficheros
+      logger.info("Comienza carga y limpieza de Ciudades.")
+      cities.load(sc, sq)
+      logger.info("Termina carga y limpieza de Ciudades.")
+
+      logger.info("Comienza carga y limpieza de Antenas.")
+      antennas.load(sc, sq)
+      logger.info("Termina carga y limpieza de Antenas.")
+
+      logger.info("Comienza carga y limpieza de clientes.")
+      clients.load(sc, sq)
+      logger.info("Termina carga y limpieza de clientes.")
+
+      logger.info("Comienza carga y limpieza de eventos.")
+      events.load(sc, sq)
+      logger.info("Termina carga y limpieza de eventos.")
+
+    }
+
+    def getSchemas(): Unit = {
 
       println("dfCities:")
       val dfCities = sq.read.parquet(parameters.getString("hdfs.cleanData.cities"))
@@ -81,27 +106,6 @@ object Main {
       dfEventsPredictions.printSchema()
       dfEventsPredictions.show()
 
-    }
-
-
-    def loadData(): Unit = {
-
-      // Carga y limpieza de ficheros
-      logger.info("Comienza carga y limpieza de Ciudades.")
-      cities.load(sc, sq)
-      logger.info("Termina carga y limpieza de Ciudades.")
-
-      logger.info("Comienza carga y limpieza de Antenas.")
-      antennas.load(sc, sq)
-      logger.info("Termina carga y limpieza de Antenas.")
-
-      logger.info("Comienza carga y limpieza de clientes.")
-      clients.load(sc, sq)
-      logger.info("Termina carga y limpieza de clientes.")
-
-      logger.info("Comienza carga y limpieza de eventos.")
-      events.load(sc, sq)
-      logger.info("Termina carga y limpieza de eventos.")
 
     }
 
