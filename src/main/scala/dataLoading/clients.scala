@@ -47,7 +47,7 @@ object clients {
         val df = sq.read.option("header", "true").option("delimiter", ";").schema(customSchema).csv(clientsInput).distinct()
         df.printSchema()
         df.show()
-        df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(clientsData)
+        df.coalesce(1).write.mode(SaveMode.Append).parquet(clientsData)
         logger.info("Se ha escrito el fichero de clientes en HDFS")
         // Muevo los ficheros a OLD para historificar
         //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.clientsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))

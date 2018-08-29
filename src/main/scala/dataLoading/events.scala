@@ -75,7 +75,7 @@ object events {
         println("en total hay: " + totalEvents + " eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
 
 
-        validDf.coalesce(1).write.mode(SaveMode.Overwrite).parquet(eventsData)
+        validDf.coalesce(1).write.mode(SaveMode.Append).parquet(eventsData)
         logger.info("Se ha escrito el fichero de eventos en HDFS")
         // Muevo los ficheros a OLD para historificar
         //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.eventsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))

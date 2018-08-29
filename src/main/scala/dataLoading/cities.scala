@@ -71,7 +71,7 @@ object cities {
           .withColumn("cityid", monotonically_increasing_id())
         dfGeo.printSchema()
         dfGeo.show()
-        dfGeo.coalesce(1).write.mode(SaveMode.Overwrite).parquet(citiesData)
+        dfGeo.coalesce(1).write.mode(SaveMode.Append).parquet(citiesData)
         logger.info("Se ha escrito el fichero de ciudades en HDFS")
         println("Se ha escrito el fichero de ciudades en HDFS")
         // Muevo los ficheros a OLD para historificar

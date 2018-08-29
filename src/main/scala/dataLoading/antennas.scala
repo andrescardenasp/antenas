@@ -74,7 +74,7 @@ object antennas {
 
         df.printSchema()
         df.show()
-        df.coalesce(1).write.mode(SaveMode.Overwrite).parquet(antennasData)
+        df.coalesce(1).write.mode(SaveMode.Append).parquet(antennasData)
         logger.info("Se ha escrito el fichero de antenas en HDFS")
         println("Se ha escrito el fichero de antenas en HDFS")
         // Muevo los ficheros a OLD para historificar
