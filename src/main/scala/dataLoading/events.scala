@@ -12,6 +12,8 @@ import org.apache.spark.sql.functions.{col, date_format, from_unixtime, split, t
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.apache.commons.lang.StringUtils
+import org.apache.spark.sql.expressions.Window.partitionBy
+import org.apache.spark.sql.functions._
 
 object events {
 
@@ -63,19 +65,35 @@ object events {
           .withColumn("day", split(col("Date"), "/").getItem(0))
           .withColumn("month", split(col("Date"), "/").getItem(1))
           .withColumn("year", split(col("Date"), "/").getItem(2))
-          .withColumn("dayofweek", date_format(to_date(col("Date"), "dd/MM/yyyy"), "EEEE"))
+          .withColumn("dayofweek", date_format(to_date(col("Date"), "dd/MM/yyyy"), "u"))
           .withColumn("hour", split(col("Time"), ":").getItem(0))
           .withColumn("minute", split(col("Time"), ":").getItem(1))
+          .withColumn("weekhour", concat(col("dayofweek"),lit("-"),col("hour")))
+
+
+        val pivotedEvents = validDf.select(col("clientid"), col("date"), col("antennaid"), col("time"), col("day"),
+          col("month"), col("year"), col("dayofweek"), col("hour"), col("minute"), col("weekhour"),
+          count(col("weekhour")).over(partitionBy(col("clientid"),col("antennaid"))).as("Count"))
+          .groupBy(col("clientid"),col("antennaid"))
+          .pivot("weekhour").agg(first("Count"))
+
+
+
+//val validDfCols = validDf.columns
+
+       // val eventsPivoted = validDf.select(col())
 
         validDf.printSchema()
         validDf.show()
+        pivotedEvents.printSchema()
+        pivotedEvents.show()
         val totalEnrichedEvents = validDf.count()
         val filteredEvents = totalEvents-totalEnrichedEvents
         logger.info("en total hay: " + totalEvents + " eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
         println("en total hay: " + totalEvents + " eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
 
 
-        validDf.coalesce(1).write.mode(SaveMode.Append).parquet(eventsData)
+        validDf.coalesce(1).write.mode(SaveMode.Overwrite).parquet(eventsData)
         logger.info("Se ha escrito el fichero de eventos en HDFS")
         // Muevo los ficheros a OLD para historificar
         //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.eventsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))

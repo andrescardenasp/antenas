@@ -30,7 +30,7 @@ object Main {
       println(s"Executed with the parameter=${args(0)}.")
       println(execMode)
       // Check for valid mode
-      if (execMode != "1" && execMode != "2" && execMode != "3") {
+      if (execMode != "1" && execMode != "2" && execMode != "3" && execMode != "4" && execMode != "5" && execMode != "6") {
         logger.error("=> wrong execution mode")
         System.err.println("wrong execution mode: Usage: Only one parameter that indicates execution mode: 1 to train a Kmeans model / 2 to predict using the trained modelTrain")
         System.exit(1)
@@ -40,26 +40,43 @@ object Main {
 
 
     if (execMode == "1") { // 1 = Train
-      //loadData()
-      logger.info("Comienza entrenamiento del modelo Kmeans.")
+      loadData()
+      logger.info("Comienza Carga y entrenamiento del modelo Kmeans.")
       modelTrain.modelPipeline(sc, sq)
-      logger.info("Termina el entrenamiento del modelo Kmeans.")
+      logger.info("Termina Carga y Termina el entrenamiento del modelo Kmeans.")
     }
 
     else if (execMode == "2") { // 2 = Predict
-     // loadData()
-      logger.info("Comienza predicción con el Kmeans previamente entrenado.")
+      loadData()
+      logger.info("Comienza Carga y predicción con el Kmeans previamente entrenado.")
       modelPredict.modelPipeline(sc, sq)
-      logger.info("Termina predicción con el Kmeans previamente entrenado.")
+      logger.info("Termina Carga y predicción con el Kmeans previamente entrenado.")
     }
 
     else if (execMode == "3") { // 3 = Get schemas mode
       getSchemas()
     }
 
+    else if (execMode == "4") { // 4 = OnlyLoadMode
+      loadData()
+    }
+
+    else if (execMode == "5") { // 4 = OnlyTrainMode
+      logger.info("Comienza entrenamiento del modelo Kmeans.")
+      modelTrain.modelPipeline(sc, sq)
+      logger.info("Termina el entrenamiento del modelo Kmeans.")
+    }
+
+    else if (execMode == "6") { // 4 = OnlyPredictMode
+
+      logger.info("Comienza predicción con el Kmeans previamente entrenado.")
+      modelPredict.modelPipeline(sc, sq)
+      logger.info("Termina predicción con el Kmeans previamente entrenado.")
+    }
+
 
     def loadData(): Unit = {
-
+/*
       // Carga y limpieza de ficheros
       logger.info("Comienza carga y limpieza de Ciudades.")
       cities.load(sc, sq)
@@ -72,7 +89,7 @@ object Main {
       logger.info("Comienza carga y limpieza de clientes.")
       clients.load(sc, sq)
       logger.info("Termina carga y limpieza de clientes.")
-
+*/
       logger.info("Comienza carga y limpieza de eventos.")
       events.load(sc, sq)
       logger.info("Termina carga y limpieza de eventos.")
