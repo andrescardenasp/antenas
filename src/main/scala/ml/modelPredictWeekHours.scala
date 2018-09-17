@@ -39,11 +39,12 @@ object modelPredictWeekHours {
       //val kMeansPredictionModel = pipeline.fit(dfEvents)
       val kMeansPredictionModel = PipelineModel.read.load(modelLocation)
 
-      val predictionResult = kMeansPredictionModel.transform(dfEventsAntenasWeekHours)
+      val predictionResult = kMeansPredictionModel.transform(dfEventsAntenasWeekHours).drop("features")
 
       predictionResult.show()
+      predictionResult.printSchema()
 
-      predictionResult.coalesce(1).write.mode(SaveMode.Append).parquet(predictionsData)
+      predictionResult.coalesce(1).write.mode(SaveMode.Overwrite).parquet(predictionsData)
       logger.info("Se ha escrito fichero con los resultados despues de aplicar Kmeans")
       println("Se ha escrito fichero con los resultados despues de aplicar Kmeans")
 

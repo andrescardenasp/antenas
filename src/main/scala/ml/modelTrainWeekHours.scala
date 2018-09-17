@@ -34,8 +34,11 @@ object modelTrainWeekHours {
       println("Comienzo la carga de los datos para alimentar al modelo.")
       val dfEventsAntenasWeekHours = sq.read.parquet(parameters.getString("hdfs.modeldata.data"))
 
+      println("En total hay registros en el df de horas de la semana:")
+      println(dfEventsAntenasWeekHours.count())
 
-      val assembler = new VectorAssembler().setInputCols(dfEventsAntenasWeekHours.columns).setOutputCol("features")
+
+      val assembler = new VectorAssembler().setInputCols(common.utils.weekHoursList.toArray).setOutputCol("features")
 
       val kmeans = new KMeans().setK(2).setFeaturesCol("features").setPredictionCol("prediction")
 

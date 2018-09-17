@@ -42,14 +42,14 @@ object Main {
     if (execMode == "1") { // 1 = Train
       loadData()
       logger.info("Comienza Carga y entrenamiento del modelo Kmeans.")
-      modelTrain.modelPipeline(sc, sq)
+      modelTrainWeekHours.modelPipeline(sc, sq)
       logger.info("Termina Carga y Termina el entrenamiento del modelo Kmeans.")
     }
 
     else if (execMode == "2") { // 2 = Predict
       loadData()
       logger.info("Comienza Carga y predicción con el Kmeans previamente entrenado.")
-      modelPredict.modelPipeline(sc, sq)
+      modelPredictWeekHours.modelPipeline(sc, sq)
       logger.info("Termina Carga y predicción con el Kmeans previamente entrenado.")
     }
 
@@ -61,16 +61,16 @@ object Main {
       loadData()
     }
 
-    else if (execMode == "5") { // 4 = OnlyTrainMode
+    else if (execMode == "5") { // 5 = OnlyTrainMode
       logger.info("Comienza entrenamiento del modelo Kmeans.")
-      modelTrain.modelPipeline(sc, sq)
+      modelTrainWeekHours.modelPipeline(sc, sq)
       logger.info("Termina el entrenamiento del modelo Kmeans.")
     }
 
     else if (execMode == "6") { // 4 = OnlyPredictMode
 
       logger.info("Comienza predicción con el Kmeans previamente entrenado.")
-      modelPredict.modelPipeline(sc, sq)
+      modelPredictWeekHours.modelPipeline(sc, sq)
       logger.info("Termina predicción con el Kmeans previamente entrenado.")
     }
 
