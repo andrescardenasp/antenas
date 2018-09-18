@@ -50,6 +50,7 @@ object modelTrainWeekHours {
       dfEventsAntenasWeekHours.show()
 
       val kMeansPredictionModel = pipeline.fit(dfEventsAntenasWeekHours)
+      val centroid =
 
       pipeline.write.overwrite.save(pipelineLocation)
       kMeansPredictionModel.write.overwrite().save(modelLocation)
