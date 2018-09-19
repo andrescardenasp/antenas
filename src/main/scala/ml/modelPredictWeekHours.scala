@@ -9,6 +9,8 @@ import org.apache.hadoop.fs.FileSystem
 import org.apache.log4j.Logger
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.PipelineModel
+import org.apache.spark.ml.clustering.KMeansModel
+import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.sql.functions.col
 import org.apache.spark.sql.{SQLContext, _}
 
@@ -37,9 +39,11 @@ object modelPredictWeekHours {
 
 
       //val kMeansPredictionModel = pipeline.fit(dfEvents)
-      val kMeansPredictionModel = PipelineModel.read.load(modelLocation)
-
-      val predictionResult = kMeansPredictionModel.transform(dfEventsAntenasWeekHours).drop("features")
+      //val kMeansPredictionModel = PipelineModel.read.load(modelLocation)
+      val kMeansPredictionModel = KMeansModel.read.load(modelLocation)
+      val assembler = new VectorAssembler().setInputCols(common.utils.weekHoursList.toArray).setOutputCol("features")
+      val assembled = assembler.transform(dfEventsAntenasWeekHours)
+      val predictionResult = kMeansPredictionModel.transform(assembled).drop("features")
 
       predictionResult.show()
       predictionResult.printSchema()

@@ -42,17 +42,25 @@ object modelTrainWeekHours {
 
       val kmeans = new KMeans().setK(2).setFeaturesCol("features").setPredictionCol("prediction")
 
+
+/*
       val pipeline = new Pipeline().setStages(Array(
         assembler,
         kmeans
-      ))
+      ))*/
 
       dfEventsAntenasWeekHours.show()
 
-      val kMeansPredictionModel = pipeline.fit(dfEventsAntenasWeekHours)
-      val centroid =
+      //val kMeansPredictionModel = pipeline.fit(dfEventsAntenasWeekHours)
 
-      pipeline.write.overwrite.save(pipelineLocation)
+      val assembled = assembler.transform(dfEventsAntenasWeekHours)
+
+      val kMeansPredictionModel = kmeans.fit(assembled)
+
+      for ( center <- kMeansPredictionModel.clusterCenters) println(center)
+
+
+
       kMeansPredictionModel.write.overwrite().save(modelLocation)
 
       logger.info("Se ha guardado el pipeline y el modelo entrenado")
