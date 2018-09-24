@@ -1,7 +1,6 @@
 package common
 
 import org.apache.spark.sql.functions.udf
-//import common.PolygonUtils
 import org.apache.spark.sql.Row
 
 object utils {
@@ -38,10 +37,10 @@ object utils {
 
 
   def getAntennaInCity(geoPoint: GeoPoint, poly: Polygon): Boolean = {
-    PolygonUtils.pointInPolygon(geoPoint,poly)
+    PolygonUtils.pointInPolygon(geoPoint, poly)
   }
 
-  val pointInPolygonUDF = udf[Boolean, GeoPoint, Polygon](getAntennaInCity(_,_))
+  val pointInPolygonUDF = udf[Boolean, GeoPoint, Polygon](getAntennaInCity(_, _))
 
 
   def antennaInCityFilter(row: Row): Boolean = {
@@ -58,12 +57,12 @@ object utils {
 
     val antennaPoint = GeoPoint(row.getDouble(row.fieldIndex("y")), row.getDouble(row.fieldIndex("x")))
 
-    PolygonUtils.pointInPolygon(antennaPoint,CityPol)
+    PolygonUtils.pointInPolygon(antennaPoint, CityPol)
 
 
   }
 
-  val weekHoursList= Seq(
+  val weekHoursList = Seq(
     ("1-00"), ("1-01"), ("1-02"), ("1-03"), ("1-04"), ("1-05"), ("1-06"), ("1-07"), ("1-08"), ("1-09"), ("1-10"), ("1-11"), ("1-12"), ("1-13"), ("1-14"), ("1-15"), ("1-16"), ("1-17"), ("1-18"), ("1-19"), ("1-20"), ("1-21"), ("1-22"), ("1-23"),
     ("2-00"), ("2-01"), ("2-02"), ("2-03"), ("2-04"), ("2-05"), ("2-06"), ("2-07"), ("2-08"), ("2-09"), ("2-10"), ("2-11"), ("2-12"), ("2-13"), ("2-14"), ("2-15"), ("2-16"), ("2-17"), ("2-18"), ("2-19"), ("2-20"), ("2-21"), ("2-22"), ("2-23"),
     ("3-00"), ("3-01"), ("3-02"), ("3-03"), ("3-04"), ("3-05"), ("3-06"), ("3-07"), ("3-08"), ("3-09"), ("3-10"), ("3-11"), ("3-12"), ("3-13"), ("3-14"), ("3-15"), ("3-16"), ("3-17"), ("3-18"), ("3-19"), ("3-20"), ("3-21"), ("3-22"), ("3-23"),

@@ -66,6 +66,7 @@ object PolygonUtils {
     val tuple = precalc(polygon.corners, 0, polygon.corners - 1, polyX, polyY, List(), List())
 
     val oddNodes = false
+
     isInside(point, polygon.corners, 0, polygon.corners - 1, polyX, polyY, tuple._1.toArray, tuple._2.toArray, oddNodes)
   }
 

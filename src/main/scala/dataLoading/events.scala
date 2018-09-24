@@ -8,10 +8,9 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Row, SQLContext, SaveMode}
 import org.apache.spark.sql.types.{StructField, StructType, _}
-import org.apache.spark.sql.functions.{col, date_format, from_unixtime, split, to_date, udf, unix_timestamp}
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import org.apache.commons.lang.StringUtils
+import org.apache.spark.sql.functions.{col, date_format, split, to_date}
+import java.time.format.{DateTimeFormatter, DateTimeParseException}
+import org.apache.commons.lang3.StringUtils
 import org.apache.spark.sql.expressions.Window.partitionBy
 import org.apache.spark.sql.functions._
 
@@ -26,7 +25,7 @@ object events {
 
   def load(sc: SparkContext, sq: SQLContext) {
     val conf = sc.hadoopConfiguration
-    val sqlContext= new org.apache.spark.sql.SQLContext(sc)
+    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
     import sqlContext.implicits._
 
     val parameters = ConfigFactory.parseResources("properties.conf").resolve()
@@ -62,8 +61,8 @@ object events {
 
 
         val validDf = df.filter(validateDf(_))
-          .withColumnRenamed("ClientId","clientid")
-          .withColumnRenamed("AntennaId","antennaid")
+          .withColumnRenamed("ClientId", "clientid")
+          .withColumnRenamed("AntennaId", "antennaid")
           .withColumn("time", split(col("Date"), "-").getItem(1))
           .withColumn("date", split(col("Date"), "-").getItem(0))
           .withColumn("day", split(col("Date"), "/").getItem(0))
@@ -72,22 +71,15 @@ object events {
           .withColumn("dayofweek", date_format(to_date(col("Date"), "dd/MM/yyyy"), "u"))
           .withColumn("hour", split(col("Time"), ":").getItem(0))
           .withColumn("minute", split(col("Time"), ":").getItem(1))
-          .withColumn("weekhour", concat(col("dayofweek"),lit("-"),col("hour")))
-
-
-/*        val pivotedEvents = validDf.select(col("clientid"), col("date"), col("antennaid"), col("time"), col("day"),
-          col("month"), col("year"), col("dayofweek"), col("hour"), col("minute"), col("weekhour"),
-          count(col("weekhour")).over(partitionBy(col("clientid"),col("antennaid"))).as("Count"))
-          .groupBy(col("clientid"),col("antennaid"))
-          .pivot("weekhour").agg(first("Count"))*/
+          .withColumn("weekhour", concat(col("dayofweek"), lit("-"), col("hour")))
 
         val lscol = sc.parallelize(common.utils.weekHoursList).toDF("allweekhour")
 
-
+        //DF pivot and vector formatting
         val pivotedEventsAllHours = validDf.join(lscol, validDf.col("weekhour") === lscol.col("allweekhour"), "right")
           .drop(validDf("weekhour"))
-          .withColumn("Count", count(col("allweekhour")).over(partitionBy(col("clientid"),col("antennaid"))))
-          .groupBy(col("clientid"),col("antennaid"))
+          .withColumn("Count", count(col("allweekhour")).over(partitionBy(col("clientid"), col("antennaid"))))
+          .groupBy(col("clientid"), col("antennaid"))
           .pivot("allweekhour")
           .agg(first("Count"))
           //.agg(count("allweekhour"))
@@ -95,17 +87,13 @@ object events {
           .na.fill(0)
 
 
-
-
         validDf.printSchema()
         validDf.show()
-//        pivotedEvents.printSchema()
-//        pivotedEvents.show()
         pivotedEventsAllHours.printSchema()
         pivotedEventsAllHours.show()
 
         val totalEnrichedEvents = validDf.count()
-        val filteredEvents = totalEvents-totalEnrichedEvents
+        val filteredEvents = totalEvents - totalEnrichedEvents
         logger.info("en total hay: " + totalEvents + " eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
         println("en total hay: " + totalEvents + " eventos, se han escrito: " + totalEnrichedEvents + ". Se han filtrado por formato o falta de datos:" + filteredEvents)
 
@@ -113,8 +101,8 @@ object events {
         validDf.coalesce(1).write.mode(SaveMode.Overwrite).parquet(eventsData)
         pivotedEventsAllHours.coalesce(1).write.mode(SaveMode.Overwrite).parquet(dataToModel)
         logger.info("Se ha escrito el fichero de eventos en HDFS")
-        // Muevo los ficheros a OLD para historificar
-        //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.eventsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        // move to history
+        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.eventsPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de eventos para cargar")
@@ -133,7 +121,7 @@ object events {
 
   }
 
-
+// validates if a date has the correct format or not
   def validateDf(row: Row): Boolean = {
 
     try {
@@ -142,20 +130,12 @@ object events {
       //logger.info("Fecha validada correctamente" + dateInRow)
       true
     } catch {
-      case ex: java.time.format.DateTimeParseException => {
+      case ex: DateTimeParseException => {
         // Handle exception if you want
         //logger.error("Fallo en la validación de fechas" + ex)
         false
       }
     }
   }
-
-
-
-  //
-  //  def getDayOfWeek(row: Row): String = {
-  //    LocalDate.parse(row.getString(1), dformatter).getDayOfWeek.toString
-  //  }
-
 
 }

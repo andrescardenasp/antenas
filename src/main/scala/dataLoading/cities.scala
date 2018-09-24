@@ -2,25 +2,16 @@ package dataLoading
 
 import java.net.URI
 
-import org.apache.spark.sql.SQLContext
-import org.apache.spark.{SparkConf, SparkContext}
+
+import org.apache.spark.{SparkContext}
 import org.apache.hadoop.fs.{FileSystem, Path}
-import org.apache.spark
-import org.apache.spark.sql.functions._
-import org.apache.spark.sql.types._
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.SparkSession
-import java.util.Properties
-
-import org.apache.commons.lang.StringUtils
-import org.apache.spark.mllib
-import com.typesafe.config.{Config, ConfigFactory}
+import com.typesafe.config.{ConfigFactory}
 import common._
 import org.apache.log4j.Logger
 import org.apache.spark.sql.SQLContext
-
-
+import org.apache.commons.lang3.StringUtils
 
 
 object cities {
@@ -34,24 +25,25 @@ object cities {
     val citiesInput = parameters.getString("hdfs.input.cities")
     val citiesData = parameters.getString("hdfs.cleanData.cities")
     val hdfs = FileSystem.get(new URI(parameters.getString("hdfs.url")), conf)
-    import sq.implicits._
+
     try {
 
-// Valido si hay ficheros para procesar
+      // Files to process?
       val files = hdfs.listStatus(new Path(parameters.getString("hdfs.input.citiesPath")))
       var total = 0
-      files.foreach(x=> total +=1)
-      //println(total)
+      files.foreach(x => total += 1)
+
       if (total > 0) {
+
+        //Files processing
+
         logger.info("Existen " + total + " ficheros de ciudades para cargar, procede con la carga")
         println("Existen " + total + " ficheros de ciudades para cargar, procede con la carga")
         // Leo los ficheros de la ruta en hdfs.
         val df = sq.read.option("header", "true").option("delimiter", ";").csv(citiesInput).distinct()
-          .withColumnRenamed("CityName","cityname")
-          .withColumnRenamed("Population","population")
-        //df.printSchema()
-        //    df.show()
-
+          .withColumnRenamed("CityName", "cityname")
+          .withColumnRenamed("Population", "population")
+        //Dataframe formatting
         val dfGeo = df
           .withColumn("lat1", utils.toDouble(split(col("X1"), ",").getItem(1)))
           .withColumn("lon1", utils.toDouble(split(col("X1"), ",").getItem(0)))
@@ -69,13 +61,14 @@ object cities {
           .drop("X4")
           .drop("X5")
           .withColumn("cityid", monotonically_increasing_id())
+
         dfGeo.printSchema()
         dfGeo.show()
         dfGeo.coalesce(1).write.mode(SaveMode.Overwrite).parquet(citiesData)
         logger.info("Se ha escrito el fichero de ciudades en HDFS")
         println("Se ha escrito el fichero de ciudades en HDFS")
-        // Muevo los ficheros a OLD para historificar
-        //files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.citiesPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
+        // Move to history
+        files.foreach(x=> hdfs.rename(x.getPath, new Path(parameters.getString("hdfs.input.old.citiesPath")+StringUtils.substringAfterLast(x.getPath.toString(),"/"))))
 
       } else {
         logger.warn("No hay ficheros de ciudades para cargar")

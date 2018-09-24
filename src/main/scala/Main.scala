@@ -1,6 +1,6 @@
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.{Row, SQLContext, SaveMode}
+import org.apache.spark.sql.SQLContext
 import dataLoading._
 import ml._
 import org.apache.log4j.Logger
@@ -39,14 +39,14 @@ object Main {
     }
 
 
-    if (execMode == "1") { // 1 = Train
+    if (execMode == "1") { // 1 = Loads and Train
       loadData()
       logger.info("Comienza Carga y entrenamiento del modelo Kmeans.")
       modelTrainWeekHours.modelPipeline(sc, sq)
       logger.info("Termina Carga y Termina el entrenamiento del modelo Kmeans.")
     }
 
-    else if (execMode == "2") { // 2 = Predict
+    else if (execMode == "2") { // 2 = Loads and Predict
       loadData()
       logger.info("Comienza Carga y predicción con el Kmeans previamente entrenado.")
       modelPredictWeekHours.modelPipeline(sc, sq)
@@ -54,7 +54,7 @@ object Main {
     }
 
     else if (execMode == "3") { // 3 = Get schemas mode
-      getSchemas()
+      obtainSchemas()
     }
 
     else if (execMode == "4") { // 4 = OnlyLoadMode
@@ -76,27 +76,27 @@ object Main {
 
 
     def loadData(): Unit = {
-/*
-      // Carga y limpieza de ficheros
-      logger.info("Comienza carga y limpieza de Ciudades.")
-      cities.load(sc, sq)
-      logger.info("Termina carga y limpieza de Ciudades.")
 
-      logger.info("Comienza carga y limpieza de Antenas.")
-      antennas.load(sc, sq)
-      logger.info("Termina carga y limpieza de Antenas.")
+            // Carga y limpieza de ficheros
+            logger.info("Comienza carga y limpieza de Ciudades.")
+            cities.load(sc, sq)
+            logger.info("Termina carga y limpieza de Ciudades.")
 
-      logger.info("Comienza carga y limpieza de clientes.")
-      clients.load(sc, sq)
-      logger.info("Termina carga y limpieza de clientes.")
-*/
-      logger.info("Comienza carga y limpieza de eventos.")
-      events.load(sc, sq)
-      logger.info("Termina carga y limpieza de eventos.")
+            logger.info("Comienza carga y limpieza de Antenas.")
+            antennas.load(sc, sq)
+            logger.info("Termina carga y limpieza de Antenas.")
+
+            logger.info("Comienza carga y limpieza de clientes.")
+            clients.load(sc, sq)
+            logger.info("Termina carga y limpieza de clientes.")
+
+            logger.info("Comienza carga y limpieza de eventos.")
+            events.load(sc, sq)
+            logger.info("Termina carga y limpieza de eventos.")
 
     }
 
-    def getSchemas(): Unit = {
+    def obtainSchemas(): Unit = {
 
       println("dfCities:")
       val dfCities = sq.read.parquet(parameters.getString("hdfs.cleanData.cities"))
@@ -125,8 +125,6 @@ object Main {
 
 
     }
-
-
 
   }
 }
